@@ -27,6 +27,7 @@
           "microphonePermission": false
         }
       ]
-    ]
+    ],
+    "icon": "./assets/app-icon.png"
   }
 }
