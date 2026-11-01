@@ -2,13 +2,14 @@
 
 Amaç: farklı ekranlarda tek Header kullanmak. Dal: `feat/harun-header`.
 Referans çözüm bu dalın geçmişinde yoktur. Önce `feat/mobile-foundation`
-PR'ı main'e alınmalıdır. Şablon main'e alındıktan sonra çözümünü
-`feat/harun-header-solution` dalından main'e PR açarak gönder.
-Şablon henüz main'de değilse bu dalı başlangıç al ve PR bağımlılığını açıkla.
+PR'ı main'e alınmalıdır. `feat/harun-header` dalını başlangıç alarak
+`feat/harun-header-solution` dalını oluştur; çözümünü main'e PR açarak gönder.
+Temel PR henüz birleşmediyse kendi PR açıklamanda #2 bağımlılığını belirt.
 
 ## Başlangıç
 
-`cd mobile`, `npm ci`, `npm run web`. Android/iOS için `npm start`.
+`cd mobile` ve `npm ci` sonrasında iOS için `npm run ios`, Android için
+`npm run android` çalıştır. Kontrolleri simülatörde veya cihazda yap.
 `src/app/index.tsx` dört kullanım örneğini ve olay sayaçlarını gösterir.
 Asıl dosyan `src/shared/ui/Header.tsx`. Gerekirse Header'a özel stil dosyası
 ekleyebilirsin. Paket, API veya navigasyon eklemene gerek yok.
