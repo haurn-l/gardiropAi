@@ -14,7 +14,7 @@
 *.jks
 *.keystore
 *.mobileprovision
-node_modules/
+node_modules
 .expo/
 dist/
 coverage/
