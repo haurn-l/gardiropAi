@@ -1,0 +1,27 @@
+# Kişisel ayarlar ve gizli bilgiler hiçbir çalışma dalında paylaşılmaz.
+.DS_Store
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.mobileprovision
+node_modules/
+.expo/
+dist/
+coverage/
+test-results/
+playwright-report/
+*.log
+*.tsbuildinfo
+mobile/ios/
+mobile/android/
+
