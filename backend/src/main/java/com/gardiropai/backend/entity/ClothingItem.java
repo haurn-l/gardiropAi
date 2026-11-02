@@ -4,11 +4,9 @@ import com.gardiropai.backend.enums.Category;
 import com.gardiropai.backend.enums.ItemStatus;
 import com.gardiropai.backend.enums.Season;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.List;
 
 //Kullanıcıların gardırobuna eklediği her bir kıyafet parçası bu sınıfta tutulur.
 @Entity
@@ -59,4 +57,10 @@ public class ClothingItem {
      */
     @Column(name = "custom_tags", columnDefinition = "jsonb")
     private String customTags;
+
+    //Buradan sonrasını Semih ekledi
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany(mappedBy = "clothingItems")
+    private List<Combine> combines;
 }
