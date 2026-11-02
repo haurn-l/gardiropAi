@@ -1,5 +1,6 @@
 package com.gardiropai.backend.entity;
 
+import com.gardiropai.backend.enums.SenderType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,7 @@ public class ChatMessage {
     // Mesajı gönderen taraf (Örn: "USER" veya "AI")
     // İstersen Enum (Role) olarak da değiştirebilirsin
     @Column(name = "sender_role", nullable = false)
-    private String senderRole;
+    private SenderType senderRole;
 
     // Mesajın metin içeriği
     @Column(columnDefinition = "TEXT", nullable = false)
