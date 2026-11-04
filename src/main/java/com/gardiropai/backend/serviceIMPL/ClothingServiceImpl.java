@@ -4,7 +4,8 @@ import com.gardiropai.backend.dto.request.ClothingCreateRequest;
 import com.gardiropai.backend.entity.ClothingItem;
 import com.gardiropai.backend.entity.User;
 import com.gardiropai.backend.enums.ItemStatus;
-import com.gardiropai.backend.exception.ResourceNotFoundException;
+import com.gardiropai.backend.exception.UserNotFoundException;
+import com.gardiropai.backend.exception.ClothingNotFoundException;
 import com.gardiropai.backend.repository.ClothingItemRepository;
 import com.gardiropai.backend.repository.UserRepository;
 import com.gardiropai.backend.service.ClothingService;
@@ -27,7 +28,7 @@ public class ClothingServiceImpl implements ClothingService {
     public ClothingItem addClothingItem(ClothingCreateRequest request) {
         // Kullanıcıyı veritabanından bul
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadi"));
+                .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı. ID:" + request.getUserId()));
 
         // DTO'dan gelen veriyi Entity'e çevir ve veritabanına kaydet
         ClothingItem newItem = ClothingItem.builder()
@@ -48,7 +49,7 @@ public class ClothingServiceImpl implements ClothingService {
     @Override
     public ClothingItem updateClothingStatus(Long itemId, ItemStatus newStatus) { // Temiz import kullanımı
         ClothingItem item = clothingRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Kıyafet bulunamadı. ID: " + itemId));
+                .orElseThrow(() -> new ClothingNotFoundException("Güncellenecek kıyafet bulunamadı. ID:" + itemId));
 
         item.setStatus(newStatus);
         return clothingRepository.save(item);
@@ -56,7 +57,7 @@ public class ClothingServiceImpl implements ClothingService {
     @Override
     public void deleteClothing(Long itemId) {
         if (!clothingRepository.existsById(itemId)) {
-            throw new ResourceNotFoundException("Silinecek kıyafet bulunamadı.");
+            throw new ClothingNotFoundException("Silinecek kıyafet bulunamadı. ID:" + itemId);
         }
         clothingRepository.deleteById(itemId);
     }
