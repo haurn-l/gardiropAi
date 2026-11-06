@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "GardıropAI",
+    "slug": "gardiropai",
+    "scheme": "gardiropai",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gardiropai.mobile"
+    },
+    "android": {
+      "package": "com.gardiropai.mobile"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Gardırobuna kıyafet eklemek için fotoğraf seçimine izin ver.",
+          "cameraPermission": "Kıyafetinin fotoğrafını çekmek için kameraya izin ver.",
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "icon": "./assets/app-icon.png"
+  }
+}
