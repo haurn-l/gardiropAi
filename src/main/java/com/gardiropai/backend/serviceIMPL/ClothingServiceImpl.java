@@ -40,7 +40,25 @@ public class ClothingServiceImpl implements ClothingService {
 
         return clothingRepository.save(newItem);
     }
+    @Override
+    public List<ClothingItem> getAllClothesByUser(Long userId) {
+        return clothingRepository.findByUserId(userId);
+    }
+    @Override
+    public ClothingItem updateClothingStatus(Long itemId, ItemStatus newStatus) { // Temiz import kullanımı
+        ClothingItem item = clothingRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Kıyafet bulunamadı. ID: " + itemId));
 
+        item.setStatus(newStatus);
+        return clothingRepository.save(item);
+    }
+    @Override
+    public void deleteClothing(Long itemId) {
+        if (!clothingRepository.existsById(itemId)) {
+            throw new RuntimeException("Silinecek kıyafet bulunamadı.");
+        }
+        clothingRepository.deleteById(itemId);
+    }
     @Override
     public List<ClothingItem> getAllCleanClothesByUser(Long userId) {
         return clothingRepository.findByUserIdAndStatus(userId, ItemStatus.TEMIZ);

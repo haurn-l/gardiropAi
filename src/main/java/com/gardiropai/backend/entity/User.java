@@ -1,11 +1,10 @@
 package com.gardiropai.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Bu snif veritabanindaki 'users' tablosunu temsil edecek
@@ -33,4 +32,16 @@ public class User {
     //Kullanici tarzini sifirlamak isterse bu tarihe bakılır.
     @Column(name = "preferences_reset_date")
     private LocalDateTime preferencesResetDate;
+
+    //Buradan sonrasını Semih ekledi
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Combine> combines;
+
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ChatSession> chatSessions;
 }
