@@ -17,12 +17,15 @@ Release derlemesi ve cihaz kontrolleri: [Native geliştirme](mobile/docs/native-
 
 ## Ekip düzeni
 
-`main` dalına doğrudan gönderim yapmayın. `feat/mobile-...`, `fix/mobile-...`
-ve `feat/harun-...` gibi açıklayıcı dallardan PR açın. İnceleme ve testten sonra
-yetkili ekip üyeleri birleştirir. Mevcut CODEOWNERS kuralı korunur.
+Her geliştirici güncel `main` üzerinden kendi çalışma dalını açar.
+Dal adları yapılan işi anlatır: `feat/mobile-...`, `fix/mobile-...` veya `chore/...`.
+`main` dalına doğrudan gönderim yapılmaz; inceleme ve kontrollerden sonra PR
+birleştirilir. Adımlar: [Katkı rehberi](CONTRIBUTING.md).
 
 API anahtarları mobil uygulamada tutulmaz. `EXPO_PUBLIC_` değişkenleri uygulamayı
 kullanan herkes tarafından okunabilir. `.env.example` yalnızca örnek yapılandırma
 içerir; yerel `.env`, IDE ve imza dosyaları Git'e eklenmez.
 
-Mimari ve görev sözleşmeleri için `mobile/docs` klasörünü inceleyin.
+Mimari ve native geliştirme dokümanları `mobile/docs` klasöründedir.
+Kişiye özel görev ve mentorluk notları ekip içinde özelden paylaşılır;
+kaynak kodda bileşen sözleşmeleri ve teknik karar açıklamaları bulunur.

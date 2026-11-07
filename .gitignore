@@ -59,3 +59,7 @@ playwright-report/
 mobile/ios/
 mobile/android/
 
+# Yerel mentorluk notları; teknik dokümantasyon depoda kalır.
+/private-notes/
+/mobile/docs/harun/
+
