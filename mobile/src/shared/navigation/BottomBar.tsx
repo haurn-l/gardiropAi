@@ -1,50 +1,129 @@
-import { StyleSheet, View } from 'react-native';
-import { colors, space } from '../theme/tokens';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { colors, radius, space } from '../theme/tokens';
+import { Icon } from '../ui/Icon';
 import { Text } from '../ui/Text';
+import { bottomTabs } from './bottomBar.items';
 import type { BottomBarProps } from './bottomBar.types';
 
-/**
- * HARUN GÖREV 02 — kontrollü alt bar.
- * Sözleşme: ./bottomBar.types.ts içindeki BottomBarProps değişmeyecek.
- * Liste: ./bottomBar.items.ts içindeki bottomTabs; üç sekmeyi map ile çiz.
- *
- * 1. Dış View yatay olsun; üç sekme eşit genişliği paylaşsın.
- * 2. Her sekme React Native Pressable olsun. Ortak ../ui/Icon ve ../ui/Text
- *    kullan; ikon adı item.icon, görünen yazı item.label alanından gelir.
- * 3. Seçili durum: props.activeTab === item.id. Yeni useState ekleme.
- *    accessibilityRole="tab", accessibilityLabel={item.label} ve
- *    accessibilityState={{ selected: seçiliMi }} değerlerini bağla.
- * 4. Basılınca props.onSelectTab(item.id) çağır. Render sırasında çağırma.
- *    Aktif sekmeye tekrar basış da tek olay üretmeli; uzun basış ekleme.
- * 5. En sağa + butonu koy: icon="plus", accessibilityRole="button",
- *    accessibilityLabel="Kıyafet ekle", onPress={props.onAddPress}.
- *    + bir sekme değildir; seçili sekmeyi kendi içinde değiştirme.
- * 6. Her dokunma alanı en az 48x48 olsun. Metin büyüyebilsin; bara sabit
- *    yükseklik verme. Alt boşluk en az Math.max(props.bottomInset, space.sm).
- * 7. Tema: colors.surface, line, accent, ink, muted, primary, onPrimary.
- *    Inline renk kodu, yeni ikon/font/navigasyon paketi ekleme.
- *
- * Burada router, API, ekran görünürlüğü veya konumlandırma kararı yok.
- * Atölye zaten barı kaydırma alanının dışında tutar ve detaylarda göstermez.
- * Stil kararı için StyleSheet kullan. İstersen sekme öğesini ayrı dosyaya çıkar.
- * Kontrol ekranı: features/workshops/BottomBarWorkshop.tsx.
- * Kabul listesi ve çalışma sırası: docs/harun/02-bottom-bar.md.
- */
-export function BottomBar({ bottomInset }: BottomBarProps) {
+// Ortak alt bar : Seçili sekmeyi üst ekrandan alır, kendi içinde useState tutmaz.
+export function BottomBar({
+  activeTab,
+  onSelectTab,
+  onAddPress,
+  bottomInset,
+}: BottomBarProps) {
   return (
-    <View style={[styles.placeholder, { paddingBottom: Math.max(bottomInset, space.sm) }]}>
-      <Text variant="caption" muted>
-        Harun: alt barı burada tamamla.
-      </Text>
+    // Dış taşıyıcı: Sabit yükseklik verilmez alt alan en az space.sm kadar uygulanır.
+    <View
+      style={[
+        styles.container,
+        { paddingBottom: Math.max(bottomInset, space.sm) },
+      ]}
+    >
+      {/* Üç ana sekme: bottomTabs listesi üzerinden eşit genişlik paylaşacak şekilde çizilir. */}
+      {bottomTabs.map((item) => {
+        const isSelected = activeTab === item.id;
+
+        return (
+          <Pressable
+            key={item.id}
+            accessibilityRole="tab"
+            accessibilityLabel={item.label}
+            accessibilityState={{ selected: isSelected }}
+            // Tıklama anında üst ekranın fonksiyonunu bir kez çağırır; render sırasında çağırmaz.
+            onPress={() => onSelectTab(item.id)}
+            style={({ pressed }) => [
+              styles.tabButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            {/* İkon alanı: Seçili sekmenin arkasında açık turuncu (colors.accent) vurgu gösterilir. */}
+            <View
+              style={[
+                styles.iconContainer,
+                isSelected && styles.iconContainerSelected,
+              ]}
+            >
+              <Icon
+                name={item.icon}
+                size={20}
+                color={isSelected ? colors.ink : colors.muted}
+              />
+            </View>
+
+            {/* Sekme etiketi: Seçili olduğunda koyu (colors.ink), diğer durumda soluk (muted) görünür. */}
+            <Text
+              variant="caption"
+              muted={!isSelected}
+              style={[styles.tabLabel, isSelected && styles.tabLabelSelected]}
+            >
+              {item.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+
+      {/* Sağdaki bağımsız + aksiyonu: Bir sekme değildir, seçili sekmeyi değiştirmez. */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Kıyafet ekle"
+        onPress={onAddPress}
+        style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
+      >
+        <Icon name="plus" size={22} color={colors.onPrimary} />
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  placeholder: {
-    padding: space.lg,
-    backgroundColor: colors.surface,
-    borderTopColor: colors.line,
-    borderTopWidth: 1,
+  container: {
+    flexDirection: 'row', // Sekmeleri ve + butonunu yatayda yan yana diz.
+    alignItems: 'center', // Elemanları dikey eksende ortala.
+    gap: space.xs, // Elemanlar arası yatay boşluk.
+    paddingTop: space.sm, // Üst iç boşluk.
+    paddingHorizontal: space.sm, // Sağ ve sol kenar boşlukları.
+    backgroundColor: colors.surface, // Alt barın yüzey rengi.
+    borderTopWidth: 1, // Üst ayraç çizgisi kalınlığı.
+    borderTopColor: colors.line, // Üst ayraç çizgisi rengi.
+  },
+  tabButton: {
+    flex: 1, // Üç sekmenin eşit genişliği paylaşmasını sağlar.
+    minWidth: 48, // Minimum 48x48 dokunma alanı kuralı.
+    minHeight: 48,
+    paddingVertical: space.xs,
+    paddingHorizontal: space.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.xs, // İkon ve metin arasındaki dikey boşluk.
+  },
+  iconContainer: {
+    paddingHorizontal: space.md,
+    paddingVertical: space.xs,
+    borderRadius: radius.full, // Tam yuvarlatılmış hap görünümü.
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconContainerSelected: {
+    backgroundColor: colors.accent, // Seçili sekme ikonu arkasındaki açık turuncu alan.
+  },
+  tabLabel: {
+    textAlign: 'center', // Uzun metinler alt satıra geçtiğinde ortalı dursun.
+  },
+  tabLabelSelected: {
+    color: colors.ink, // Seçili sekme metni için okunaklı koyu ton.
+    fontWeight: '600',
+  },
+  addButton: {
+    minWidth: 48, // + butonu için minimum 48x48 dokunma alanı.
+    minHeight: 48,
+    borderRadius: radius.full, // Yuvarlak buton formu.
+    backgroundColor: colors.primary, // Ana vurgu zemin rengi.
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: space.xs,
+  },
+  pressed: {
+    opacity: 0.7, // Basılma anında görsel geri bildirim.
   },
 });
