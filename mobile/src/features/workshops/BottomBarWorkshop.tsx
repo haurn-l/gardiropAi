@@ -54,6 +54,12 @@ export function BottomBarWorkshop() {
           variant="secondary"
           onPress={() => router.push('/header-workshop')}
         />
+        <Button
+                  label="Kıyafet kartı örnekleri"
+                  variant="secondary"
+                  onPress={() => router.push('/clothing-preview')}
+                />
+
         <View style={styles.notes}>
           <Text variant="strong">Kontrol sırası</Text>
           <Text>1. Üç sekmeye sırayla bas; başlık, seçili görünüm ve sayaç birlikte güncellensin.</Text>
