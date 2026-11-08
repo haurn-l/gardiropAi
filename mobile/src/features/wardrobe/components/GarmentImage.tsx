@@ -9,28 +9,31 @@ type GarmentImageProps = {
 };
 
 export function GarmentImage({ imageUri }: GarmentImageProps) {
-  // Yalnızca hata veren URI değerini saklıyoruz; üst bileşen yeni bir imageUri gönderdiğinde
-  // eşleşme bozulacağı için önceki hata kalıcı olmaz ve yeni görsel otomatik olarak tekrar denenir.
-  const [failedUri, setFailedUri] = useState<string | null>(null);
-  const showFallback = !imageUri || failedUri === imageUri;
-
   return (
     <View style={styles.container}>
-      {showFallback ? (
-        <View style={styles.fallback} accessible={false}>
-          <Icon name="shirt" size={36} color={colors.muted} />
-        </View>
-      ) : (
-        <Image
-          key={imageUri}
-          source={{ uri: imageUri }}
-          contentFit="cover"
-          style={styles.image}
-          onError={() => setFailedUri(imageUri)}
-          accessible={false}
-        />
-      )}
+      <GarmentImageContent key={imageUri ?? ''} imageUri={imageUri} />
     </View>
+  );
+}
+
+function GarmentImageContent({ imageUri }: GarmentImageProps) {
+  // URI değişince key bu durumu sıfırlar; eski bir adrese dönüş de yeni yükleme denemesidir.
+  const [failed, setFailed] = useState(false);
+  if (!imageUri || failed) {
+    return (
+      <View style={styles.fallback} accessible={false}>
+        <Icon name="shirt" size={36} color={colors.muted} />
+      </View>
+    );
+  }
+  return (
+    <Image
+      source={{ uri: imageUri }}
+      contentFit="cover"
+      style={styles.image}
+      onError={() => setFailed(true)}
+      accessible={false}
+    />
   );
 }
 

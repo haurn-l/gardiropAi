@@ -3,6 +3,7 @@ import { colors, radius, space } from '../../../shared/theme/tokens';
 import { Icon } from '../../../shared/ui/Icon';
 import { Text } from '../../../shared/ui/Text';
 import type { ClothingCardProps } from '../model/clothingCard.types';
+import { clothingStatusLabels } from '../model/clothingStatus';
 import { GarmentImage } from './GarmentImage';
 import { StatusBadge } from './StatusBadge';
 
@@ -17,7 +18,8 @@ export function ClothingCard({ item, onOpen, onToggleFavorite }: ClothingCardPro
       {/* Gövde alanı yalnızca detay açma olayını tetikler; favori butonu bu Pressable içine gömülmemiştir. */}
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${item.name}, ${item.categoryLabel}, ${item.colorLabel}`}
+        accessibilityLabel={`${item.name}, ${item.categoryLabel}, ${item.colorLabel}, ${clothingStatusLabels[item.status]}`}
+        accessibilityHint="Kıyafet detaylarını açar."
         onPress={() => onOpen(item.id)}
         style={({ pressed }) => [styles.body, pressed && styles.pressed]}
       >

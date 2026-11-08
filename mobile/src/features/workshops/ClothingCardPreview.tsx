@@ -108,7 +108,7 @@ export function ClothingCardPreview() {
     <SafeAreaView style={styles.screen}>
       <Header
         title="Kıyafet kartı örnekleri"
-        subtitle="Görev 03 · Görsel, durum rozeti ve favori"
+        subtitle="Görsel, durum rozeti ve favori"
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
       />
       <ScrollView contentContainerStyle={styles.content}>
