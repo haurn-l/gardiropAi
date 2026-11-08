@@ -5,14 +5,14 @@ import { Header } from '../shared/ui/Header';
 import { Text } from '../shared/ui/Text';
 import { colors } from '../shared/theme/tokens';
 
-// Harun: burası görev kontrol ekranı. Asıl işi Header.tsx içinde yap.
+// Aynı Header sözleşmesini farklı içerik ve olaylarla doğrulayan örnek ekran.
 export default function HeaderWorkshop() {
   const [backCount, setBackCount] = useState(0);
   const [filterCount, setFilterCount] = useState(0);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView contentContainerStyle={{ padding: 20, gap: 24 }}>
-        <Text variant="title">Üst bar atölyesi</Text>
+        <Text variant="title">Üst bar örnekleri</Text>
         <Text muted>Her örnek aynı Header bileşenini farklı parametrelerle kullanır.</Text>
         <View style={{ gap: 12 }}>
           <Text variant="label">01 · YALNIZCA BAŞLIK</Text>
@@ -45,7 +45,7 @@ export default function HeaderWorkshop() {
           Geri çağrısı: {backCount} · Filtre çağrısı: {filterCount}
         </Text>
         <Text muted>
-          Başlangıçta butonlar yoktur. Görev tamamlandığında ilgili örneklerde görünür ve sayaçları artırır.
+          Her basış ilgili sayacı bir artırır; yalnızca verilen aksiyonların butonları görünür.
         </Text>
       </ScrollView>
     </SafeAreaView>

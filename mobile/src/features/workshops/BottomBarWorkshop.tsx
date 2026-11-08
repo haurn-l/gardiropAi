@@ -17,7 +17,7 @@ const screenActions: Record<BottomTabId, { label: string; target: PreviewId }> =
   conversations: { label: 'Yeni sohbet', target: 'chat' },
 };
 
-// Harun yalnızca BottomBar'ı tamamlar. Durumu ve gerçek Stack geçişlerini bu ekran yönetir.
+// Seçim durumunu ve Stack geçişlerini üst ekran yönetir; alt bar kontrollü kalır.
 export function BottomBarWorkshop() {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<BottomTabId>('wardrobe');
@@ -41,7 +41,7 @@ export function BottomBarWorkshop() {
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Header title="Alt bar atölyesi" subtitle="Görev 02 · Seçim, dokunma ve ekran geçişleri" />
+        <Header title="Alt bar örnekleri" subtitle="Seçim, dokunma ve ekran geçişleri" />
         <Text variant="heading">{tab.label}</Text>
         <Text accessibilityLiveRegion="polite">
           Sekme çağrısı: {tabCalls} · Ekle çağrısı: {addCalls}
@@ -50,7 +50,7 @@ export function BottomBarWorkshop() {
         <Button label="Sekmeyi dışarıdan değiştir" variant="secondary" onPress={selectExternally} />
         <Text muted>Dışarıdan seçim sayacı artırmaz; alt bar yeni activeTab değerini göstermelidir.</Text>
         <Button
-          label="Üst bar atölyesini aç"
+          label="Üst bar örneklerini aç"
           variant="secondary"
           onPress={() => router.push('/header-workshop')}
         />
