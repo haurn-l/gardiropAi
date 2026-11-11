@@ -59,6 +59,11 @@ export function BottomBarWorkshop() {
           variant="secondary"
           onPress={() => router.push('/clothing-preview')}
         />
+        <Button
+                  label="Gardırop listesi örnekleri"
+                  variant="secondary"
+                  onPress={() => router.push('/wardrobe-preview')}
+        />
 
         <View style={styles.notes}>
           <Text variant="strong">Kontrol sırası</Text>
