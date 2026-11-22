@@ -8,13 +8,13 @@ export type WardrobeListProps = {
   items: readonly ClothingCardItem[];
   onOpen: (id: string) => void;
   onToggleFavorite: (id: string) => void;
-  header?: ReactElement ;
+  header?: ReactElement;
   emptyState?: ReactElement;
 };
 
 /**
  * Verilen kıyafet kayıtlarını iki sütunlu FlatList düzeninde görüntüler.
- * Tek kalan son kartın iki sütun genişliğine yayılmaması için her öğe sabit sütun oranıyla sarılır.
+ * Sütun aralığı iç boşlukla verilir; tek kalan kartın genişliği de aynı kalır.
  */
 export function WardrobeList({
   items,
@@ -48,10 +48,11 @@ const styles = StyleSheet.create({
     gap: space.md,
   },
   row: {
-    gap: space.md,
+    marginHorizontal: -space.md / 2,
     alignItems: 'stretch',
   },
   columnSlot: {
-    flex: 0.5,
+    width: '50%',
+    paddingHorizontal: space.md / 2,
   },
 });

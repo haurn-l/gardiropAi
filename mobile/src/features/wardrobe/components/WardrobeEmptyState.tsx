@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   centeredText: {
-      width : '100%',
+    width: '100%',
     textAlign: 'center',
   },
 });

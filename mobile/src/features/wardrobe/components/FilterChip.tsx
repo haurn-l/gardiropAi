@@ -39,7 +39,9 @@ export function FilterChip({ label, selected, onPress, icon }: FilterChipProps) 
 
 const styles = StyleSheet.create({
   chip: {
-    minHeight: 40,
+    minWidth: 48,
+    minHeight: 48,
+    maxWidth: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.xs,

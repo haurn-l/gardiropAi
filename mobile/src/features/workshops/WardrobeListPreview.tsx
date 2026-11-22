@@ -72,7 +72,7 @@ export function WardrobeListPreview() {
     <SafeAreaView style={styles.screen}>
       <Header
         title="Gardırop listesi örnekleri"
-        subtitle="Görev 04 · Arama, filtreler ve FlatList"
+        subtitle="Arama, filtreler ve kıyafetler"
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
       />
       <WardrobeList
