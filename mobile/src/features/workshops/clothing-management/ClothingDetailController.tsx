@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, usePreventRemove } from 'expo-router';
 import type { RatingValue } from '../../../shared/ui/rating.types';
 import type { ClothingStatus } from '../../wardrobe/model/clothingCard.types';
 import { ClothingDetailScreen } from '../../wardrobe/screens/ClothingDetailScreen';
@@ -16,6 +16,8 @@ export function ClothingDetailController() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const busyRef = useRef(false);
+  // Sistem geri tuşu ve iOS geri hareketi de işlem bitene kadar ekranda kalmalı.
+  const disablePrevention = usePreventRemove(busy);
 
   const item = id ? getItem(id) : undefined;
 
@@ -37,6 +39,9 @@ export function ClothingDetailController() {
   }
 
   function handleBack() {
+    if (busyRef.current) {
+      return;
+    }
     if (router.canGoBack()) {
       router.back();
     } else {
@@ -78,6 +83,10 @@ export function ClothingDetailController() {
   function handleDelete(targetId: string) {
     void runAction(async () => {
       await removeItem(targetId);
+      // Silme tamamlandı; programlı geri dönüşten önce gezinme kilidini kaldır.
+      busyRef.current = false;
+      setBusy(false);
+      disablePrevention();
       handleBack();
     });
   }

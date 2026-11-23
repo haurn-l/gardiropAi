@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { router } from 'expo-router';
+import { router, usePreventRemove } from 'expo-router';
 import { ClothingReview } from '../../capture/components/ClothingReview';
 import type { ClothingDraft } from '../../wardrobe/model/clothing.types';
 import { createEmptyClothingDraft } from '../../wardrobe/model/clothingOptions';
@@ -19,6 +19,8 @@ export function ClothingReviewController() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const busyRef = useRef(false);
+  // Kayıt beklerken sistem geri tuşu/geri hareketi ikinci bir gezinme başlatmamalı.
+  const disablePrevention = usePreventRemove(busy);
 
   function leaveToList() {
     if (router.canGoBack()) {
@@ -37,6 +39,8 @@ export function ClothingReviewController() {
     setError(undefined);
     try {
       await createItem(validated, imageUri);
+      setBusy(false);
+      disablePrevention();
       leaveToList();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Kıyafet eklenemedi.');

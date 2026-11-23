@@ -60,4 +60,3 @@ export function createEmptyClothingDraft(): ClothingDraft {
     usage: '',
   };
 }
-
