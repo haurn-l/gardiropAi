@@ -4,6 +4,8 @@ import com.gardiropai.backend.dto.request.CombineCreateRequest;
 import com.gardiropai.backend.dto.response.CombineResponse;
 import com.gardiropai.backend.service.CombineService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,9 +42,15 @@ public class CombineController {
     @PatchMapping("/{combineId}/rate")
     public ResponseEntity<CombineResponse> rateCombine(
             @PathVariable Long combineId,
-            @RequestParam Integer ratingScore) { // URL'de ?ratingScore=5 şeklinde gelir
+            @RequestParam @Min(1) @Max(5) Integer ratingScore) {
         CombineResponse response = combineService.rateCombine(combineId, ratingScore);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{combineId}/favorite")
+    public ResponseEntity<CombineResponse> updateFavorite(
+            @PathVariable Long combineId, @RequestParam boolean favorite) {
+        return ResponseEntity.ok(combineService.updateFavorite(combineId, favorite));
     }
 
     //Kombini silme (İçerik dönmez, 204 NO CONTENT döner)

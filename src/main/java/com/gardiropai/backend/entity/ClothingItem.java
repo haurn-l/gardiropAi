@@ -5,6 +5,7 @@ import com.gardiropai.backend.enums.ItemStatus;
 import com.gardiropai.backend.enums.Season;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -13,6 +14,7 @@ import java.util.List;
 //Kullanıcıların gardırobuna eklediği her bir kıyafet parçası bu sınıfta tutulur.
 @Entity
 @Table(name = "clothes")
+@DynamicUpdate
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +28,11 @@ public class ClothingItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // Veritabanındaki Foreign Key sütunu
     private User user;
+
+    private String name;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean favorite;
 
     @Column(name = "image_url") //lokaldeki fotoğrafın linki
     private String imageUrl;

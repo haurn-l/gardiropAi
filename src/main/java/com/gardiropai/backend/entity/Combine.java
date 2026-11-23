@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "combines")
+@DynamicUpdate
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,6 +49,9 @@ public class Combine {
     // Kullanıcının bu kombine verdiği beğeni puanı (Örn: 1 ile 5 arası)
     @Column(name = "rating_score")
     private Integer ratingScore;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean favorite;
 
     // Kombinin oluşturulduğu tarih (Geçmiş kombinleri sıralamak için)
     @Column(name = "created_at", updatable = false)

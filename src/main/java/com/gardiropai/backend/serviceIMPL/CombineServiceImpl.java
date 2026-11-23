@@ -1,7 +1,6 @@
 package com.gardiropai.backend.serviceIMPL;
 
 import com.gardiropai.backend.dto.request.CombineCreateRequest;
-import com.gardiropai.backend.dto.response.ClothingResponse;
 import com.gardiropai.backend.dto.response.CombineResponse;
 import com.gardiropai.backend.entity.ClothingItem;
 import com.gardiropai.backend.entity.Combine;
@@ -9,6 +8,7 @@ import com.gardiropai.backend.entity.User;
 import com.gardiropai.backend.exception.ClothingNotFoundException;
 import com.gardiropai.backend.exception.CombineNotFoundException;
 import com.gardiropai.backend.exception.UserNotFoundException;
+import com.gardiropai.backend.mapper.ClothingResponseMapper;
 import com.gardiropai.backend.repository.ClothingItemRepository;
 import com.gardiropai.backend.repository.CombineRepository;
 import com.gardiropai.backend.repository.UserRepository;
@@ -28,6 +28,7 @@ public class CombineServiceImpl implements CombineService {
     private final CombineRepository combineRepository;
     private final UserRepository userRepository;
     private final ClothingItemRepository clothingRepository;
+    private final ClothingResponseMapper clothingResponseMapper;
 
     @Override
     @Transactional
@@ -56,6 +57,7 @@ public class CombineServiceImpl implements CombineService {
                 .user(user)
                 .clothingItems(clothingItems)
                 .ratingScore(request.getRatingScore())
+                .favorite(Boolean.TRUE.equals(request.getFavorite()))
                 .createdAt(LocalDateTime.now()) // Ne zaman oluşturulduğu bilgisini ekliyoruz
                 .build();
 
@@ -66,6 +68,7 @@ public class CombineServiceImpl implements CombineService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CombineResponse> getUserCombines(Long userId) {
         // Kullanıcı var mı kontrolü
         if (!userRepository.existsById(userId)) {
@@ -98,6 +101,15 @@ public class CombineServiceImpl implements CombineService {
 
     @Override
     @Transactional
+    public CombineResponse updateFavorite(Long combineId, boolean favorite) {
+        Combine combine = combineRepository.findById(combineId)
+                .orElseThrow(() -> new CombineNotFoundException("Kombin bulunamadı. ID: " + combineId));
+        combine.setFavorite(favorite);
+        return convertToCombineResponse(combine);
+    }
+
+    @Override
+    @Transactional
     public void deleteCombine(Long combineId) {
         // Kombin var mı kontrolü yap (Yoksa otomatik hata fırlatacak)
         if (!combineRepository.existsById(combineId)) {
@@ -110,26 +122,15 @@ public class CombineServiceImpl implements CombineService {
 
     // --- YARDIMCI METOTLAR (ENTITY -> DTO DÖNÜŞÜMÜ) ---
 
-    private ClothingResponse convertToClothingResponse(ClothingItem item) {
-        return ClothingResponse.builder()
-                .id(item.getId())
-                .imageUrl(item.getImageUrl())
-                .category(item.getCategory())
-                .subCategory(item.getSubCategory())
-                .color(item.getColor())
-                .season(item.getSeason())
-                .status(item.getStatus())
-                .build();
-    }
-
     private CombineResponse convertToCombineResponse(Combine combine) {
         return CombineResponse.builder()
                 .id(combine.getId())
                 .userId(combine.getUser().getId())
                 .clothingItems(combine.getClothingItems().stream()
-                        .map(this::convertToClothingResponse)
+                        .map(clothingResponseMapper::toResponse)
                         .collect(Collectors.toList()))
                 .ratingScore(combine.getRatingScore())
+                .favorite(combine.isFavorite())
                 .createdAt(combine.getCreatedAt())
                 .build();
     }
