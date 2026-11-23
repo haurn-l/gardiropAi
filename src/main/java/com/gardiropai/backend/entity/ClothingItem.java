@@ -5,6 +5,8 @@ import com.gardiropai.backend.enums.ItemStatus;
 import com.gardiropai.backend.enums.Season;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
@@ -53,8 +55,9 @@ public class ClothingItem {
 
     /**
      * Standart seçeneklerde (Dropdown) bulunmayan ekstra özellikleri tutmak için.
-     * JSON formatında veya virgülle ayrılmış string olarak tutulabilir (Örn: "fosforlu, yirtik").
+     * Geçerli JSON olarak saklanır (ör. ["fosforlu", "yırtık"]).
      */
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "custom_tags", columnDefinition = "jsonb")
     private String customTags;
 

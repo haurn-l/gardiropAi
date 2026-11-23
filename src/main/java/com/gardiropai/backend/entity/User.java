@@ -2,6 +2,8 @@ package com.gardiropai.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +28,7 @@ public class User {
     private String username;
 
     //Kullanıcının yapay zeka tarafından analiz edilen tarz verilerini tutar,postgreSQL'de esnek sorgular yapabilmek için 'jsonb' formatında saklıyoruz.
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "style_preferences", columnDefinition = "jsonb")
     private String stylePreferences;
 
