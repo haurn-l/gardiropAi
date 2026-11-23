@@ -22,5 +22,7 @@ public class CombineResponse{
 
     private Integer ratingScore;
 
+    private boolean favorite;
+
     private LocalDateTime createdAt;
 }

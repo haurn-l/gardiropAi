@@ -20,4 +20,6 @@ public class CombineCreateRequest {
     @Min(1)
     @Max(5)
     private Integer ratingScore;
+
+    private Boolean favorite;
 }
