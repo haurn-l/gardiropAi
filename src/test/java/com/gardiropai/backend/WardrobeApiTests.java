@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,17 +40,21 @@ class WardrobeApiTests {
     private JsonMapper jsonMapper;
 
     @Test
-    void appliesWardrobeFiltersTogetherAndSearchesTurkishText() throws Exception {
-        long userId = createUser();
-        long match = addClothing(userId, "İpek gömlek", "UST_GIYIM", "Karışık Spor");
-        long dirty = addClothing(userId, "İpek sweatshirt", "UST_GIYIM", "Karışık Spor");
-        long otherCategory = addClothing(userId, "İpek pantolon", "ALT_GIYIM", "Karışık Spor");
+    void listsTheDemoWardrobeWithOrWithoutFilters() throws Exception {
+        Long firstUserId = jdbcTemplate.queryForObject("select min(id) from users", Long.class);
+        long userId = firstUserId == null ? createUser() : firstUserId;
+        String tagSuffix = " " + UUID.randomUUID();
+        String sportTag = "Karışık Spor" + tagSuffix;
+        long match = addClothing(userId, "İpek gömlek", "UST_GIYIM", sportTag);
+        long dirty = addClothing(userId, "İpek sweatshirt", "UST_GIYIM", sportTag);
+        long otherCategory = addClothing(userId, "İpek pantolon", "ALT_GIYIM", sportTag);
         long otherTag = addClothing(userId, "İpek bluz", "UST_GIYIM", "Resmî");
-        long otherName = addClothing(userId, "Pamuklu gömlek", "UST_GIYIM", "Karışık Spor");
-        long otherUser = addClothing(createUser(), "İpek gömlek", "UST_GIYIM", "Karışık Spor");
-        addClothing(userId, "İpek tişört", "UST_GIYIM", "Karışık Spor");
+        long otherName = addClothing(userId, "Pamuklu gömlek", "UST_GIYIM", sportTag);
+        long otherUserId = createUser();
+        long otherUserItem = addClothing(otherUserId, "İpek gömlek", "UST_GIYIM", sportTag);
+        addClothing(userId, "İpek tişört", "UST_GIYIM", sportTag);
 
-        for (long itemId : new long[] {match, dirty, otherCategory, otherTag, otherName, otherUser}) {
+        for (long itemId : new long[] {match, dirty, otherCategory, otherTag, otherName, otherUserItem}) {
             mockMvc.perform(put("/api/clothes/{id}/favorite", itemId).param("favorite", "true"))
                     .andExpect(status().isOk());
         }
@@ -58,24 +63,37 @@ class WardrobeApiTests {
 
         entityManager.flush();
         entityManager.clear();
-        mockMvc.perform(get("/api/clothes")
-                        .param("userId", Long.toString(userId))
+        String wardrobe = mockMvc.perform(get("/api/clothes/all"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(jsonMapper.readTree(wardrobe).values().stream()
+                .map(item -> item.required("id").asLong())
+                .toList())
+                .contains(match, dirty, otherCategory, otherTag, otherName)
+                .doesNotContain(otherUserItem);
+
+        mockMvc.perform(get("/api/clothes/all/{userId}", otherUserId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(otherUserItem));
+
+        mockMvc.perform(get("/api/clothes/all")
                         .param("status", "TEMIZ")
                         .param("category", "UST_GIYIM")
                         .param("favorite", "true")
                         .param("q", "  ipek ")
-                        .param("tag", "KARIŞIK SPOR"))
+                        .param("tag", "KARIŞIK SPOR" + tagSuffix))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(match))
                 .andExpect(jsonPath("$[0].name").value("İpek gömlek"))
-                .andExpect(jsonPath("$[0].tags[0]").value("Karışık Spor"))
+                .andExpect(jsonPath("$[0].tags[0]").value(sportTag))
                 .andExpect(jsonPath("$[0].favorite").value(true));
 
-        mockMvc.perform(get("/api/clothes").param("userId", Long.toString(userId)).param("tag", "spor"))
+        mockMvc.perform(get("/api/clothes/all").param("tag", "spor" + tagSuffix))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
-        mockMvc.perform(get("/api/clothes").param("status", "GEÇERSİZ"))
+        mockMvc.perform(get("/api/clothes/all").param("status", "GEÇERSİZ"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
     }
