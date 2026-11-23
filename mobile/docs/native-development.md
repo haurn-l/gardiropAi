@@ -2,6 +2,24 @@
 
 Hedef React Native uygulamasıdır. Tarayıcı çıktısı native kabul kontrolünün yerini tutmaz.
 
+## Telefonu yerel backend'e bağlama
+
+PostgreSQL'i ve Spring Boot uygulamasını bilgisayarda başlatın. Bilgisayar ve telefon
+aynı Wi-Fi veya hotspot'a bağlanır. `.env.example` dosyasını `.env.local` olarak
+kopyalayın ve fiziksel telefon için `EXPO_PUBLIC_API_URL` değerini örneğin
+`http://192.168.1.109:8080` biçiminde bilgisayarın güncel adresine ayarlayın.
+Telefon tarayıcısında bu adrese `/api/clothes/all` ekleyerek bağlantıyı sınayın.
+Ardından `npm start -- --lan` ile Expo'yu açın. API adresini değiştirirseniz
+Expo'yu yeniden başlatın. Adres ayarlanmazsa atölye ekranı açılır.
+
+Kamera veya galeriden gelen fotoğraf Expo tarafından JPEG olarak hazırlanır ve
+`POST /api/clothes/photo-drafts` yoluna `photo` alanıyla yüklenir. Onayda
+`POST /api/clothes/photo-drafts/{uploadId}/confirm` çağrısı kıyafeti kaydeder.
+Spring Boot, fotoğrafı varsayılan olarak kullanıcı dizinindeki
+`.gardiropai/photos/originals` altında tutar. `GARDIROP_PHOTO_DIR` ile kök dizin
+değiştirilebilir. PostgreSQL fotoğrafın HTTP adresini ve kıyafet bilgilerini tutar.
+Model bağlandığında işlenmiş kopyalar aynı kökün `processed` dizinine eklenebilir.
+
 ## Yerel derleme
 
 Node 24 ve `npm ci` sonrasında:

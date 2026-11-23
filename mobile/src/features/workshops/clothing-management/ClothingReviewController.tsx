@@ -3,7 +3,8 @@ import { router, usePreventRemove } from 'expo-router';
 import { ClothingReview } from '../../capture/components/ClothingReview';
 import type { ClothingDraft } from '../../wardrobe/model/clothing.types';
 import { createEmptyClothingDraft } from '../../wardrobe/model/clothingOptions';
-import { useClothingDemo } from '../demo/ClothingDemoContext';
+import { useClothingData } from '../../wardrobe/data/ClothingDataContext';
+import { ServerPhotoReview } from '../../capture/screens/ServerPhotoReview';
 import { mockPhotoOptions } from './clothingDemoData';
 import { MockPhotoPickerModal } from './MockPhotoPickerModal';
 
@@ -12,7 +13,12 @@ import { MockPhotoPickerModal } from './MockPhotoPickerModal';
  * Kaydetme onayı olmadan kayıt oluşturmaz; başarılı eklemede geri yığınında onay ekranı bırakmaz.
  */
 export function ClothingReviewController() {
-  const { createItem } = useClothingDemo();
+  const { server } = useClothingData();
+  return server ? <ServerPhotoReview /> : <DemoPhotoReview />;
+}
+
+function DemoPhotoReview() {
+  const { createItem } = useClothingData();
   const [imageUri, setImageUri] = useState(mockPhotoOptions[0].uri);
   const [draft, setDraft] = useState<ClothingDraft>(() => createEmptyClothingDraft());
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -38,7 +44,7 @@ export function ClothingReviewController() {
     setBusy(true);
     setError(undefined);
     try {
-      await createItem(validated, imageUri);
+      await createItem(validated, { uri: imageUri });
       setBusy(false);
       disablePrevention();
       leaveToList();

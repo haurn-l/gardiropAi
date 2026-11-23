@@ -9,11 +9,12 @@ import { GarmentImage } from '../../wardrobe/components/GarmentImage';
 import type { ClothingDraft } from '../../wardrobe/model/clothing.types';
 
 export type ClothingReviewProps = {
-  imageUri: string;
+  imageUri?: string;
   draft: ClothingDraft;
   onChange: (next: ClothingDraft) => void;
   onSave: (value: ClothingDraft) => void;
   onRetake: () => void;
+  onPickFromGallery?: () => void;
   onCancel: () => void;
   busy?: boolean;
   error?: string;
@@ -29,6 +30,7 @@ export function ClothingReview({
   onChange,
   onSave,
   onRetake,
+  onPickFromGallery,
   onCancel,
   busy = false,
   error,
@@ -44,29 +46,29 @@ export function ClothingReview({
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.content}
         >
-          <GarmentImage imageUri={imageUri} />
-
-          <Text variant="caption" muted>
-            Kaydetmeden önce fotoğrafı kontrol edip kıyafet bilgilerini düzenleyebilirsin.
-          </Text>
-
-          <ClothingForm
-            value={draft}
-            onChange={onChange}
-            onSubmit={onSave}
-            busy={busy}
-            error={error}
-            submitLabel="Gardıroba ekle"
-          />
+          {imageUri ? (
+            <>
+              <GarmentImage imageUri={imageUri} />
+              <ClothingForm value={draft} onChange={onChange} onSubmit={onSave}
+                busy={busy} error={error} submitLabel="Gardıroba ekle" />
+            </>
+          ) : (
+            <Text accessibilityLiveRegion="polite">
+              {error ?? (busy ? 'Fotoğraf hazırlanıyor…' : 'Kamerayla çek veya galeriden seç.')}
+            </Text>
+          )}
 
           <View style={styles.secondaryActions}>
             <Button
-              label="Tekrar çek"
+              label={imageUri ? 'Tekrar çek' : 'Fotoğraf çek'}
               variant="secondary"
               icon="camera"
               disabled={busy}
               onPress={onRetake}
             />
+            {onPickFromGallery ? (
+              <Button label="Galeriden seç" variant="secondary" disabled={busy} onPress={onPickFromGallery} />
+            ) : null}
             <Button
               label="Vazgeç"
               variant="ghost"

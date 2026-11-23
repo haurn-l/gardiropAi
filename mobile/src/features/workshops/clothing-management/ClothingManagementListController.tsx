@@ -15,14 +15,14 @@ import {
   defaultWardrobeFilters,
   type WardrobeFilters,
 } from '../../wardrobe/model/wardrobeFilters';
-import { useClothingDemo } from '../demo/ClothingDemoContext';
+import { useClothingData } from '../../wardrobe/data/ClothingDataContext';
 
 /**
  * Kıyafet yönetimi örnek akışının ana liste controller'ıdır.
  * Oturumluk kayıtları mevcut WardrobeList bileşenine bağlar ve teknik hata kontrolünü sunar.
  */
 export function ClothingManagementListController() {
-  const { items, skipPhotoGuide, simulateError, setSimulateError, updateItem } = useClothingDemo();
+  const { items, skipPhotoGuide, simulateError, setSimulateError, updateItem, server } = useClothingData();
   const [filters, setFilters] = useState<WardrobeFilters>(defaultWardrobeFilters);
   const [error, setError] = useState<string | undefined>(undefined);
   const busyRef = useRef(false);
@@ -60,26 +60,26 @@ export function ClothingManagementListController() {
 
   const listHeader = (
     <View style={styles.headerBlock}>
-      <Text variant="caption" muted>
-        Oturumluk örnek veriler · Değişiklikler yalnızca bu oturumda tutulur.
-      </Text>
+      {!server ? <Text variant="caption" muted>Oturumluk örnek gardırop</Text> : null}
       <View style={styles.controls}>
-        <Button label="Kıyafet ekle" icon="plus" onPress={handleAddClothing} />
-        <Button
-          label={simulateError ? 'Hata simülasyonu: Açık' : 'Hata simülasyonu: Kapalı'}
-          variant={simulateError ? 'danger' : 'secondary'}
-          onPress={() => setSimulateError(!simulateError)}
-        />
-        <Button
-          label="Geçersiz kayıt testi"
-          variant="secondary"
-          onPress={() => handleOpen('bilinmeyen-kayit')}
-        />
+        <Button label="Kıyafet ekle" icon="plus" disabled={server?.loading} onPress={handleAddClothing} />
+        {server?.error ? <Button label="Tekrar dene" variant="secondary" onPress={server.reload} /> : null}
+        {!server ? (
+          <>
+            <Button
+              label={simulateError ? 'Hata simülasyonu: Açık' : 'Hata simülasyonu: Kapalı'}
+              variant={simulateError ? 'danger' : 'secondary'}
+              onPress={() => setSimulateError(!simulateError)}
+            />
+            <Button label="Geçersiz kayıt testi" variant="secondary" onPress={() => handleOpen('bilinmeyen-kayit')} />
+          </>
+        ) : null}
       </View>
-      {error ? (
+      {server?.loading ? <Text variant="caption" muted>Gardırop yükleniyor…</Text> : null}
+      {server?.error || error ? (
         <View style={styles.errorBox}>
           <Text variant="caption" accessibilityLiveRegion="polite" style={styles.errorText}>
-            {error}
+            {server?.error ?? error}
           </Text>
         </View>
       ) : null}
@@ -102,14 +102,15 @@ export function ClothingManagementListController() {
     <SafeAreaView style={styles.screen}>
       <Header
         title="Kıyafet yönetimi"
-        onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        onBack={server && !router.canGoBack() ? undefined
+          : () => (router.canGoBack() ? router.back() : router.replace('/'))}
       />
       <WardrobeList
         items={visibleCards}
         onOpen={handleOpen}
         onToggleFavorite={(id) => { void handleToggleFavorite(id); }}
         header={listHeader}
-        emptyState={emptyState}
+        emptyState={server?.loading || server?.error ? undefined : emptyState}
       />
     </SafeAreaView>
   );

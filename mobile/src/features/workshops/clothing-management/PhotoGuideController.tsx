@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { PhotoGuide } from '../../capture/components/PhotoGuide';
-import { useClothingDemo } from '../demo/ClothingDemoContext';
+import { useClothingData } from '../../wardrobe/data/ClothingDataContext';
 
 /**
  * Fotoğraf rehberi ekranını oturumluk tercih ve onay akışına bağlayan controller'dır.
  */
 export function PhotoGuideController() {
-  const { skipPhotoGuide, setSkipPhotoGuide } = useClothingDemo();
+  const { skipPhotoGuide, setSkipPhotoGuide } = useClothingData();
 
   function handleCancel() {
     if (router.canGoBack()) {

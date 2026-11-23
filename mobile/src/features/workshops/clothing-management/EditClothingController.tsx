@@ -3,7 +3,7 @@ import { router, useLocalSearchParams, usePreventRemove } from 'expo-router';
 import type { ClothingDraft } from '../../wardrobe/model/clothing.types';
 import { createEmptyClothingDraft } from '../../wardrobe/model/clothingOptions';
 import { EditClothingScreen } from '../../wardrobe/screens/EditClothingScreen';
-import { useClothingDemo } from '../demo/ClothingDemoContext';
+import { useClothingData } from '../../wardrobe/data/ClothingDataContext';
 import { isClothingDraftDirty, recordToClothingDraft } from '../demo/clothingDemo.helpers';
 
 /**
@@ -13,7 +13,7 @@ import { isClothingDraftDirty, recordToClothingDraft } from '../demo/clothingDem
 export function EditClothingController() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
-  const { getItem, updateItem } = useClothingDemo();
+  const { getItem, updateItem } = useClothingData();
 
   const item = id ? getItem(id) : undefined;
   const [draft, setDraft] = useState<ClothingDraft>(() =>

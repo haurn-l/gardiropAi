@@ -39,5 +39,6 @@ export type ClothingRecord = ClothingDraft & {
   status: ClothingStatus;
   favorite: boolean;
   rating: RatingValue | null;
-  createdAt: string;
+  createdAt?: string;
+  tags?: readonly string[];
 };

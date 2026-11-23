@@ -1,23 +1,12 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { ClothingDraft, ClothingRecord } from '../../wardrobe/model/clothing.types';
+import { ClothingDataContext, type ClothingPhoto } from '../../wardrobe/data/ClothingDataContext';
 import { initialClothingRecords } from '../clothing-management/clothingDemoData';
 import {
   buildNewClothingRecord,
   patchClothingRecordInList,
   removeClothingRecordFromList,
 } from './clothingDemo.helpers';
-
-export type ClothingDemoContextValue = {
-  items: readonly ClothingRecord[];
-  skipPhotoGuide: boolean;
-  simulateError: boolean;
-  setSkipPhotoGuide: (value: boolean) => void;
-  setSimulateError: (value: boolean) => void;
-  getItem: (id: string) => ClothingRecord | undefined;
-  createItem: (draft: ClothingDraft, imageUri?: string) => Promise<ClothingRecord>;
-  updateItem: (id: string, patch: Partial<ClothingRecord>) => Promise<ClothingRecord>;
-  removeItem: (id: string) => Promise<void>;
-};
 
 type ClothingSessionMemory = {
   items: readonly ClothingRecord[];
@@ -33,8 +22,6 @@ const sessionMemory: ClothingSessionMemory = {
   simulateError: false,
   nextId: initialClothingRecords.length + 1,
 };
-
-const ClothingDemoContext = createContext<ClothingDemoContextValue | null>(null);
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -63,13 +50,13 @@ export function ClothingDemoProvider({ children }: { children: ReactNode }) {
     return items.find((item) => item.id === id);
   }
 
-  async function createItem(draft: ClothingDraft, imageUri?: string): Promise<ClothingRecord> {
+  async function createItem(draft: ClothingDraft, photo?: ClothingPhoto): Promise<ClothingRecord> {
     await wait(160);
     if (sessionMemory.simulateError) {
       throw new Error('Kıyafet kaydedilemedi. Lütfen tekrar dene.');
     }
     const id = `cl-${String(sessionMemory.nextId++).padStart(2, '0')}`;
-    const created = buildNewClothingRecord(id, draft, imageUri, new Date().toISOString());
+    const created = buildNewClothingRecord(id, draft, photo?.uri, new Date().toISOString());
     const next = [created, ...sessionMemory.items];
     sessionMemory.items = next;
     setItems(next);
@@ -109,7 +96,7 @@ export function ClothingDemoProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ClothingDemoContext.Provider
+    <ClothingDataContext.Provider
       value={{
         items,
         skipPhotoGuide,
@@ -123,17 +110,6 @@ export function ClothingDemoProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </ClothingDemoContext.Provider>
+    </ClothingDataContext.Provider>
   );
-}
-
-/**
- * Örnek controller'ların oturumluk kıyafet state'ine erişmesini sağlar.
- */
-export function useClothingDemo(): ClothingDemoContextValue {
-  const value = useContext(ClothingDemoContext);
-  if (!value) {
-    throw new Error('useClothingDemo yalnızca DemoProvider içinde kullanılabilir.');
-  }
-  return value;
 }

@@ -3,7 +3,7 @@ import { router, useLocalSearchParams, usePreventRemove } from 'expo-router';
 import type { RatingValue } from '../../../shared/ui/rating.types';
 import type { ClothingStatus } from '../../wardrobe/model/clothingCard.types';
 import { ClothingDetailScreen } from '../../wardrobe/screens/ClothingDetailScreen';
-import { useClothingDemo } from '../demo/ClothingDemoContext';
+import { useClothingData } from '../../wardrobe/data/ClothingDataContext';
 
 /**
  * Seçili kıyafet kimliğine göre detay ekranını oturumluk sağlayıcıya bağlayan controller'dır.
@@ -12,7 +12,7 @@ import { useClothingDemo } from '../demo/ClothingDemoContext';
 export function ClothingDetailController() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
-  const { getItem, updateItem, removeItem } = useClothingDemo();
+  const { getItem, updateItem, removeItem } = useClothingData();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const busyRef = useRef(false);
