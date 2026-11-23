@@ -65,11 +65,9 @@ public class ClothingServiceImpl implements ClothingService {
     }
 
     @Override
-    public List<ClothingResponse> getWardrobe(Long userId, ItemStatus status, Category category,
-                                             String query, String tag, Boolean favorite) {
-        Long wardrobeUserId = userId != null
-                ? userId
-                : userRepository.findFirstByOrderByIdAsc().map(User::getId).orElse(null);
+    public List<ClothingResponse> getAllClothes(ItemStatus status, Category category,
+                                                 String query, String tag, Boolean favorite) {
+        Long wardrobeUserId = userRepository.findFirstByOrderByIdAsc().map(User::getId).orElse(null);
         if (wardrobeUserId == null) {
             return List.of();
         }

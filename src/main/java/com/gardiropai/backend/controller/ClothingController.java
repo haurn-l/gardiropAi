@@ -29,19 +29,18 @@ public class ClothingController {
         return ResponseEntity.ok(clothingService.addClothingItem(request));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ClothingResponse>> getWardrobe(
-            @RequestParam(required = false) Long userId,
+    @GetMapping("/all")
+    public ResponseEntity<List<ClothingResponse>> getAllClothes(
             @RequestParam(required = false) ItemStatus status,
             @RequestParam(required = false) Category category,
             @RequestParam(name = "q", required = false) String query,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) Boolean favorite) {
-        return ResponseEntity.ok(clothingService.getWardrobe(userId, status, category, query, tag, favorite));
+        return ResponseEntity.ok(clothingService.getAllClothes(status, category, query, tag, favorite));
     }
 
     @GetMapping("/all/{userId}")
-    public ResponseEntity<List<ClothingResponse>> getAllClothes(@PathVariable Long userId) {
+    public ResponseEntity<List<ClothingResponse>> getAllClothesByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(clothingService.getAllClothesByUser(userId));
     }
 
