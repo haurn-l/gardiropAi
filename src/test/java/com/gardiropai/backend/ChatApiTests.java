@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -115,6 +116,46 @@ class ChatApiTests {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value("TEMIZ"));
         }
+    }
+
+    @Test
+    void deletingSavedOutfitReopensDraftAndInvalidatesPreviousConfirmation() throws Exception {
+        long chatId = startChat();
+        long otherChatId = startChat();
+        User user = users.findFirstByOrderByIdAsc().orElseThrow();
+        long top = addItem(user, "UST_GIYIM");
+        long bottom = addItem(user, "ALT_GIYIM");
+        int before = outfitCount(user.getId());
+
+        replaceDraft(chatId, 0, List.of(item(top, true), item(bottom, false))).andExpect(status().isOk());
+        replaceDraft(otherChatId, 0, List.of(item(bottom, false))).andExpect(status().isOk());
+        long deletedId = responseId(confirm(chatId, 1).andExpect(status().isOk()), "combineId");
+        long otherId = responseId(confirm(otherChatId, 1).andExpect(status().isOk()), "combineId");
+        flushAndClear();
+
+        mvc.perform(delete("/api/v1/combines/{id}", deletedId)).andExpect(status().isNoContent());
+        flushAndClear();
+
+        assertThat(outfitCount(user.getId())).isEqualTo(before + 1);
+        mvc.perform(get(CHATS + "/{id}", chatId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.draft.version").value(2))
+                .andExpect(jsonPath("$.draft.savedCombineId").isEmpty())
+                .andExpect(jsonPath("$.draft.items[0].clothingItemId").value(top))
+                .andExpect(jsonPath("$.draft.items[0].locked").value(true))
+                .andExpect(jsonPath("$.draft.items[1].clothingItemId").value(bottom));
+        mvc.perform(get(CHATS + "/{id}", otherChatId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.draft.version").value(1))
+                .andExpect(jsonPath("$.draft.savedCombineId").value(otherId));
+
+        confirm(chatId, 1).andExpect(status().isConflict());
+        long replacementId = responseId(confirm(chatId, 2).andExpect(status().isOk()), "combineId");
+        flushAndClear();
+
+        assertThat(replacementId).isNotEqualTo(deletedId);
+        assertThat(outfitCount(user.getId())).isEqualTo(before + 2);
+        confirm(chatId, 2).andExpect(status().isOk()).andExpect(jsonPath("$.combineId").value(replacementId));
     }
 
     @Test

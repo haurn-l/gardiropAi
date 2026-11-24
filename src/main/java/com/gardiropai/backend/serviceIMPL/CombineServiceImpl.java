@@ -9,6 +9,7 @@ import com.gardiropai.backend.exception.ClothingNotFoundException;
 import com.gardiropai.backend.exception.CombineNotFoundException;
 import com.gardiropai.backend.exception.UserNotFoundException;
 import com.gardiropai.backend.mapper.ClothingResponseMapper;
+import com.gardiropai.backend.repository.ChatSessionRepository;
 import com.gardiropai.backend.repository.ClothingItemRepository;
 import com.gardiropai.backend.repository.CombineRepository;
 import com.gardiropai.backend.repository.UserRepository;
@@ -30,6 +31,7 @@ public class CombineServiceImpl implements CombineService {
     private final ClothingItemRepository clothingRepository;
     private final ClothingResponseMapper clothingResponseMapper;
     private final ClothingCareService clothingCare;
+    private final ChatSessionRepository chatSessions;
 
     @Override
     @Transactional
@@ -124,6 +126,7 @@ public class CombineServiceImpl implements CombineService {
     public void deleteCombine(Long combineId) {
         Combine combine = combineRepository.findForUpdate(combineId)
                 .orElseThrow(() -> new CombineNotFoundException("Silinecek kombin bulunamadı. ID: " + combineId));
+        chatSessions.clearSavedCombine(combineId);
         combineRepository.delete(combine);
     }
 

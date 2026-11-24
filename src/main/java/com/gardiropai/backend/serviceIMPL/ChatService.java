@@ -17,6 +17,8 @@ import com.gardiropai.backend.repository.ClothingItemRepository;
 import com.gardiropai.backend.repository.UserRepository;
 import com.gardiropai.backend.service.CombineService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,12 @@ public class ChatService {
     private final UserRepository users;
     private final ClothingItemRepository clothes;
     private final CombineService combines;
+
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void repairDeletedCombineLinks() {
+        sessions.clearOrphanedSavedCombines();
+    }
 
     @Transactional
     public ChatResponses.Detail start(String title) {
