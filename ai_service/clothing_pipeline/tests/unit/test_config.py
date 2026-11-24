@@ -3,6 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
+from gardirop_ai_clothing import config as config_module
 from gardirop_ai_clothing.config import (
     PROJECT_ROOT,
     Settings,
@@ -10,8 +11,11 @@ from gardirop_ai_clothing.config import (
 )
 
 
-def test_project_root_and_manifest_path():
-    settings = Settings(_env_file=None)
+def test_project_root_and_explicit_manifest_path():
+    settings = Settings(
+        _env_file=None,
+        model_manifest_path=PROJECT_ROOT / "configs" / "model_manifest.yaml",
+    )
 
     assert (PROJECT_ROOT / "pyproject.toml").is_file()
     assert settings.model_manifest_path == (PROJECT_ROOT / "configs" / "model_manifest.yaml")
@@ -78,3 +82,36 @@ def test_settings_are_cached():
         assert first is second
     finally:
         get_settings.cache_clear()
+
+
+@pytest.mark.parametrize(
+    ("local_exists", "expected_name"),
+    [
+        (False, "model_manifest.yaml"),
+        (True, "model_manifest.local.yaml"),
+    ],
+)
+def test_default_manifest_selection(tmp_path, monkeypatch, local_exists, expected_name):
+    monkeypatch.delenv("GARDROPAI_MODEL_MANIFEST_PATH", raising=False)
+    monkeypatch.setattr(config_module, "PROJECT_ROOT", tmp_path)
+
+    configs = tmp_path / "configs"
+    configs.mkdir()
+    (configs / "model_manifest.yaml").write_text("portable", encoding="utf-8")
+    if local_exists:
+        (configs / "model_manifest.local.yaml").write_text("local", encoding="utf-8")
+
+    settings = Settings(_env_file=None)
+    assert settings.model_manifest_path == configs / expected_name
+
+
+def test_explicit_environment_manifest_overrides_local_default(tmp_path, monkeypatch):
+    monkeypatch.setattr(config_module, "PROJECT_ROOT", tmp_path)
+    configs = tmp_path / "configs"
+    configs.mkdir()
+    (configs / "model_manifest.local.yaml").write_text("local", encoding="utf-8")
+    custom = tmp_path / "custom.yaml"
+    custom.write_text("custom", encoding="utf-8")
+    monkeypatch.setenv("GARDROPAI_MODEL_MANIFEST_PATH", str(custom))
+
+    assert Settings(_env_file=None).model_manifest_path == custom

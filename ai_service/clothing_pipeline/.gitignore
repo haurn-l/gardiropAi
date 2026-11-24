@@ -51,3 +51,6 @@ venv/
 /tests/fixtures/marqo/G001_front_input.png
 /tests/fixtures/pipeline/G001_front_raw.jpg
 /tests/fixtures/pipeline/G001_back_raw.jpg
+
+# Machine-specific model paths; generated locally.
+/configs/model_manifest.local.yaml

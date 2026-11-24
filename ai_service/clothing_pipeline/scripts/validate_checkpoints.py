@@ -4,15 +4,18 @@ import argparse
 import sys
 from pathlib import Path
 
+from gardirop_ai_clothing.config import get_settings
 from gardirop_ai_clothing.errors import ConfigurationError, ModelArtifactError
 from gardirop_ai_clothing.model_manifest import verify_manifest
-
-DEFAULT_MANIFEST = Path(__file__).resolve().parents[1] / "configs/model_manifest.yaml"
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=get_settings().model_manifest_path,
+    )
     parser.add_argument("--require-ready", action="store_true")
     args = parser.parse_args()
     try:

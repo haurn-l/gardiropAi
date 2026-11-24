@@ -110,3 +110,48 @@ def build_synthetic_analysis(**kwargs):
 @pytest.fixture
 def analysis_factory():
     return build_synthetic_analysis
+
+
+@pytest.fixture
+def synthetic_photo_files(tmp_path):
+    """Create private-photo-free inputs for synthetic-runner unit tests."""
+    from PIL import Image
+
+    folder = tmp_path / "synthetic_photos"
+    folder.mkdir()
+
+    samples = (
+        ("G001_front_raw.jpg", (180, 50, 40)),
+        ("G001_back_raw.jpg", (40, 80, 180)),
+    )
+    for filename, color in samples:
+        Image.new("RGB", (128, 192), color).save(folder / filename, format="JPEG", quality=95)
+
+    return folder
+
+
+@pytest.fixture
+def synthetic_marqo_files(tmp_path):
+    """Create a synthetic reference; this is not a real encoder output."""
+    from PIL import Image
+
+    folder = tmp_path / "synthetic_marqo"
+    folder.mkdir()
+
+    image = folder / "input.png"
+    reference = folder / "reference.npz"
+
+    Image.new("RGB", (96, 96), (30, 80, 150)).save(image, format="PNG")
+
+    vector = np.zeros(768, dtype=np.float32)
+    vector[0] = 1.0
+
+    np.savez_compressed(
+        reference,
+        embedding=vector,
+        image_sha256=file_sha256(image),
+        encoder_revision=MARQO_REVISION,
+        reference_kind="synthetic_unit_test_not_model_output",
+    )
+
+    return image, reference

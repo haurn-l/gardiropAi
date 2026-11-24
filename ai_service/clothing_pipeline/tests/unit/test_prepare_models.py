@@ -102,3 +102,54 @@ def test_rehashed_modified_dynamic_code_cannot_be_marked_ready(
     with pytest.raises(ModelArtifactError, match="pinned file"):
         module.prepare(model_manifest, downloader=download)
     assert model_manifest.read_bytes() == previous
+
+
+def test_separate_output_preserves_portable_source(
+    model_manifest, parent_bundle, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(module, "PARENT_HEAD_SHA256", file_sha256(parent_bundle[0]))
+    download, _ = mock_downloader(tmp_path, monkeypatch)
+    previous = model_manifest.read_bytes()
+    output = model_manifest.with_name("model_manifest.local.yaml")
+
+    states = module.prepare(
+        model_manifest,
+        offline=True,
+        downloader=download,
+        output_path=output,
+    )
+
+    assert model_manifest.read_bytes() == previous
+    assert all(state.startswith("READY:") for state in states)
+    assert all(
+        state.startswith("READY:") for state in module.verify_manifest(output, require_ready=True)
+    )
+
+
+def test_failed_preparation_preserves_existing_separate_output(
+    model_manifest, parent_bundle, monkeypatch
+):
+    monkeypatch.setattr(module, "PARENT_HEAD_SHA256", file_sha256(parent_bundle[0]))
+    previous = model_manifest.read_bytes()
+    output = model_manifest.with_name("model_manifest.local.yaml")
+    output.write_bytes(b"previous-local-output")
+
+    def fail(**kwargs):
+        raise OSError("download interrupted")
+
+    with pytest.raises(OSError, match="interrupted"):
+        module.prepare(model_manifest, downloader=fail, output_path=output)
+
+    assert model_manifest.read_bytes() == previous
+    assert output.read_bytes() == b"previous-local-output"
+
+
+def test_separate_output_cannot_change_relative_artifact_root(model_manifest, tmp_path):
+    previous = model_manifest.read_bytes()
+    output = tmp_path / "different" / "model_manifest.local.yaml"
+
+    with pytest.raises(ValueError, match="configs directory"):
+        module.prepare(model_manifest, output_path=output)
+
+    assert model_manifest.read_bytes() == previous
+    assert not output.exists()

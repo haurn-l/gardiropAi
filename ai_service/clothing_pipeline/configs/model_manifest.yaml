@@ -18,33 +18,15 @@ models:
     repo_id: ZhengPeng7/BiRefNet_dynamic
     revision: 280306042f57b7a33854319da62fd86aaa89ec4c
     source: huggingface
-    status: ready
-    artifacts:
-    - name: config.json
-      path: /home/enes/.cache/huggingface/hub/models--ZhengPeng7--BiRefNet_dynamic/snapshots/280306042f57b7a33854319da62fd86aaa89ec4c/config.json
-      sha256: 557f461de22ede5b0a2ff60967e579180194ded47587f6e30a3a09ad08ae248b
-    - name: BiRefNet_config.py
-      path: /home/enes/.cache/huggingface/hub/models--ZhengPeng7--BiRefNet_dynamic/snapshots/280306042f57b7a33854319da62fd86aaa89ec4c/BiRefNet_config.py
-      sha256: e7b8c2a74f6cea6a59553d517f71d47f2c1d90e670a13416af17c25fe2f3dc52
-    - name: birefnet.py
-      path: /home/enes/.cache/huggingface/hub/models--ZhengPeng7--BiRefNet_dynamic/snapshots/280306042f57b7a33854319da62fd86aaa89ec4c/birefnet.py
-      sha256: 2a45b4e0ece72d7c4212bca1a988e7d7e52bfe9f98ec59c58b8809c8a8b7a831
-    - name: model.safetensors
-      path: /home/enes/.cache/huggingface/hub/models--ZhengPeng7--BiRefNet_dynamic/snapshots/280306042f57b7a33854319da62fd86aaa89ec4c/model.safetensors
-      sha256: e3d2e4884e51ff30f0cd630edc6b1e41b06b7f23a0a2a5169f7b7cb33a711c2d
+    status: planned
+    artifacts: []
   marqo_fashionsiglip:
     role: embedding
     repo_id: Marqo/marqo-fashionSigLIP
     revision: c56244cc94f92419e8369fa71efdaf403b124ce8
     source: huggingface
-    status: ready
-    artifacts:
-    - name: open_clip_config.json
-      path: /home/enes/.cache/huggingface/hub/models--Marqo--marqo-fashionSigLIP/snapshots/c56244cc94f92419e8369fa71efdaf403b124ce8/open_clip_config.json
-      sha256: bf024fad1091ed3280e48f8ff2dcdf68785abaa56dad02588c0feed1a6529c42
-    - name: open_clip_model.safetensors
-      path: /home/enes/.cache/huggingface/hub/models--Marqo--marqo-fashionSigLIP/snapshots/c56244cc94f92419e8369fa71efdaf403b124ce8/open_clip_model.safetensors
-      sha256: 88908200434959fa3154ef79d408aac33341e8797fe5ca8ca6f0463aab32e6b3
+    status: planned
+    artifacts: []
   marqo_parent_lr:
     role: subcategory_classifier
     source: local

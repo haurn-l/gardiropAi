@@ -14,6 +14,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
+def default_model_manifest_path() -> Path:
+    """Prefer local readiness without storing machine paths in Git."""
+    local = PROJECT_ROOT / "configs" / "model_manifest.local.yaml"
+    if local.is_file():
+        return local
+    return PROJECT_ROOT / "configs" / "model_manifest.yaml"
+
+
 class Settings(BaseSettings):
     """Configuration shared across the clothing AI service."""
 
@@ -58,7 +66,7 @@ class Settings(BaseSettings):
     image_square_margin_fraction: float = Field(default=0.10, ge=0, le=0.5)
 
     # Local paths
-    model_manifest_path: Path = PROJECT_ROOT / "configs" / "model_manifest.yaml"
+    model_manifest_path: Path = Field(default_factory=default_model_manifest_path)
 
     output_dir: Path = PROJECT_ROOT / "outputs"
 

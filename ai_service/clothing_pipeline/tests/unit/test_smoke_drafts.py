@@ -15,7 +15,10 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-def test_lifecycle_scenario_confirms_once_with_two_encoder_calls(tmp_path, analysis_factory):
+def test_lifecycle_scenario_confirms_once_with_two_encoder_calls(
+    tmp_path, analysis_factory, monkeypatch, synthetic_photo_files
+):
+    monkeypatch.setattr(module, "FIXTURES", synthetic_photo_files)
     analysis, counts = analysis_factory()
     output = tmp_path / "run"
     output.mkdir()
@@ -28,7 +31,10 @@ def test_lifecycle_scenario_confirms_once_with_two_encoder_calls(tmp_path, analy
         assert Path(report["result_file"]).is_file()
 
 
-def test_failed_front_produces_failed_smoke_report(tmp_path, analysis_factory):
+def test_failed_front_produces_failed_smoke_report(
+    tmp_path, analysis_factory, monkeypatch, synthetic_photo_files
+):
+    monkeypatch.setattr(module, "FIXTURES", synthetic_photo_files)
     analysis, _ = analysis_factory()
 
     def fail(*args, **kwargs):

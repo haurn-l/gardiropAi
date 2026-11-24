@@ -19,10 +19,10 @@ spec.loader.exec_module(module)
 
 
 def test_two_raw_photos_export_valid_contract_images_and_front_back_features(
-    tmp_path, analysis_factory
+    tmp_path, analysis_factory, synthetic_photo_files
 ):
     service, calls = analysis_factory()
-    source = ROOT / "tests/fixtures/pipeline"
+    source = synthetic_photo_files
     output = tmp_path / "run"
     report = module.run_smoke(
         source / "G001_front_raw.jpg", source / "G001_back_raw.jpg", "üst", output, service=service
@@ -49,14 +49,16 @@ def test_two_raw_photos_export_valid_contract_images_and_front_back_features(
         np.testing.assert_allclose(data["embedding"], result.embedding, atol=1e-7, rtol=0)
 
 
-def test_bad_back_photo_never_exports_a_success_result(tmp_path, analysis_factory):
+def test_bad_back_photo_never_exports_a_success_result(
+    tmp_path, analysis_factory, synthetic_photo_files
+):
     service, calls = analysis_factory()
     bad = tmp_path / "bad.jpg"
     bad.write_bytes(b"not an image")
     output = tmp_path / "run"
     with pytest.raises(ImageProcessingError):
         module.run_smoke(
-            ROOT / "tests/fixtures/pipeline/G001_front_raw.jpg", bad, "üst", output, service=service
+            synthetic_photo_files / "G001_front_raw.jpg", bad, "üst", output, service=service
         )
     report = json.loads((output / "report.json").read_text())
     assert report["status"] == "FAILED" and calls["head_load"] == 0
