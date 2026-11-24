@@ -56,10 +56,7 @@ public class ClothingServiceImpl implements ClothingService {
             return getClothing(photo.getClothingItemId());
         }
 
-        User user = userRepository.findFirstByOrderByIdAsc().orElseGet(() -> {
-            userRepository.ensureDemoUser();
-            return userRepository.findFirstByOrderByIdAsc().orElseThrow();
-        });
+        User user = userRepository.getOrCreateDemoUser();
         ClothingItem item = saveClothing(user, photos.url(uploadId), request);
         photo.setClothingItemId(item.getId());
         return responseMapper.toResponse(item);

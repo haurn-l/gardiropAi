@@ -2,6 +2,8 @@ package com.gardiropai.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +37,15 @@ public class ChatSession {
     // Sohbetin başlatıldığı tarih
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private List<ChatDraftItem> draftItems;
+
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private long draftVersion;
+
+    private Long savedCombineId;
 
     // Bu oturuma ait mesajların listesi (ChatMessage sınıfını yazınca hata gidecektir)
     @ToString.Exclude
