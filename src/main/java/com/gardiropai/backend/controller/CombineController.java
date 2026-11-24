@@ -53,6 +53,11 @@ public class CombineController {
         return ResponseEntity.ok(combineService.updateFavorite(combineId, favorite));
     }
 
+    @PutMapping("/{combineId}/worn")
+    public CombineResponse markWorn(@PathVariable Long combineId) {
+        return combineService.markWorn(combineId);
+    }
+
     //Kombini silme (İçerik dönmez, 204 NO CONTENT döner)
     @DeleteMapping("/{combineId}")
     public ResponseEntity<Void> deleteCombine(@PathVariable Long combineId) {

@@ -22,6 +22,7 @@ public interface ClothingService {
                                          String query, String tag, Boolean favorite);
     ClothingResponse getClothing(Long itemId);
     ClothingResponse updateClothingStatus(Long itemId, ItemStatus newStatus);
+    ClothingResponse markWorn(Long itemId);
     ClothingResponse updateFavorite(Long itemId, boolean favorite);
     ClothingResponse rateClothing(Long itemId, Integer ratingScore);
     void deleteClothing(Long itemId);

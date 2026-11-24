@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.Instant;
 import java.util.List;
 
 //Kullanıcıların gardırobuna eklediği her bir kıyafet parçası bu sınıfta tutulur.
@@ -59,6 +60,9 @@ public class ClothingItem {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ItemStatus status; // TEMIZ veya KIRLI statüsü, yapay zeka filtresi için en kritik alan!
+
+    @Column(name = "dirty_since")
+    private Instant dirtySince;
 
     /**
      * Standart seçeneklerde (Dropdown) bulunmayan ekstra özellikleri tutmak için.

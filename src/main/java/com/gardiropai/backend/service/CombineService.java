@@ -11,5 +11,6 @@ public interface CombineService {
     List<CombineResponse> getUserCombines(Long userId);
     CombineResponse rateCombine(Long combineId, Integer ratingScore);
     CombineResponse updateFavorite(Long combineId, boolean favorite);
+    CombineResponse markWorn(Long combineId);
     void deleteCombine(Long combineId);
 }

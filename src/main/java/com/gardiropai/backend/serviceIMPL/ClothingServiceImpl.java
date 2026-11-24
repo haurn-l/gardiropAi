@@ -38,6 +38,7 @@ public class ClothingServiceImpl implements ClothingService {
     private final ClothingResponseMapper responseMapper;
     private final JsonMapper jsonMapper;
     private final LocalClothingPhotos photos;
+    private final ClothingCareService clothingCare;
 
     @Override
     @Transactional
@@ -105,9 +106,13 @@ public class ClothingServiceImpl implements ClothingService {
     @Override
     @Transactional
     public ClothingResponse updateClothingStatus(Long itemId, ItemStatus newStatus) {
-        ClothingItem item = findClothing(itemId);
-        item.setStatus(newStatus);
-        return responseMapper.toResponse(item);
+        return responseMapper.toResponse(clothingCare.updateStatus(itemId, newStatus));
+    }
+
+    @Override
+    @Transactional
+    public ClothingResponse markWorn(Long itemId) {
+        return responseMapper.toResponse(clothingCare.markWorn(itemId));
     }
 
     @Override

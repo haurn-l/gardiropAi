@@ -29,6 +29,7 @@ public class CombineServiceImpl implements CombineService {
     private final UserRepository userRepository;
     private final ClothingItemRepository clothingRepository;
     private final ClothingResponseMapper clothingResponseMapper;
+    private final ClothingCareService clothingCare;
 
     @Override
     @Transactional
@@ -110,14 +111,20 @@ public class CombineServiceImpl implements CombineService {
 
     @Override
     @Transactional
-    public void deleteCombine(Long combineId) {
-        // Kombin var mı kontrolü yap (Yoksa otomatik hata fırlatacak)
-        if (!combineRepository.existsById(combineId)) {
-            throw new CombineNotFoundException("Silinecek kombin bulunamadı. ID: " + combineId);
-        }
+    public CombineResponse markWorn(Long combineId) {
+        Combine combine = combineRepository.findForUpdate(combineId)
+                .orElseThrow(() -> new CombineNotFoundException("Kombin bulunamadı. ID: " + combineId));
 
-        // Veritabanından sil
-        combineRepository.deleteById(combineId);
+        clothingCare.markWornItems(combineRepository.findClothingIds(combineId));
+        return convertToCombineResponse(combine);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCombine(Long combineId) {
+        Combine combine = combineRepository.findForUpdate(combineId)
+                .orElseThrow(() -> new CombineNotFoundException("Silinecek kombin bulunamadı. ID: " + combineId));
+        combineRepository.delete(combine);
     }
 
     // --- YARDIMCI METOTLAR (ENTITY -> DTO DÖNÜŞÜMÜ) ---

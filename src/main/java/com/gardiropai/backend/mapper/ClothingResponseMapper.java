@@ -25,6 +25,7 @@ public class ClothingResponseMapper {
                 .color(item.getColor())
                 .season(item.getSeason())
                 .status(item.getStatus())
+                .dirtySince(item.getDirtySince())
                 .hasPrint(item.getHasPrint())
                 .tags(readTags(item.getCustomTags()))
                 .favorite(item.isFavorite())
