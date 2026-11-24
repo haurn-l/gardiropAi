@@ -69,6 +69,11 @@ export function BottomBarWorkshop() {
           variant="secondary"
           onPress={() => router.push('/clothing-management')}
         />
+        <Button
+          label="Kombin geçmişi"
+          variant="secondary"
+          onPress={() => router.push('/outfit-history')}
+        />
 
         <View style={styles.notes}>
           <Text variant="strong">Kontrol sırası</Text>
