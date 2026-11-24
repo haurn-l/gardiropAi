@@ -54,3 +54,4 @@ venv/
 
 # Machine-specific model paths; generated locally.
 /configs/model_manifest.local.yaml
+/configs/api_key.local

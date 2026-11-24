@@ -7,7 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Root directory of ai_service/clothing_pipeline
@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = Field(default=8001, ge=1, le=65535)
 
+    api_key: SecretStr | None = None
+    api_key_file: Path = PROJECT_ROOT / "configs" / "api_key.local"
+
     # Logging
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
@@ -72,6 +75,7 @@ class Settings(BaseSettings):
 
     # One local worker; no Redis/Celery/backend required.
     draft_root: Path = PROJECT_ROOT / "outputs" / "draft_store"
+    api_draft_root: Path = PROJECT_ROOT / "outputs" / "api_draft_store"
     draft_ttl_seconds: int = Field(default=3600, ge=1)
     draft_terminal_retention_seconds: int = Field(default=300, ge=0)
     draft_max_pending_jobs: int = Field(default=8, ge=1, le=64)

@@ -32,6 +32,10 @@ help:
 	@echo "make attributes-prepare  Prepare frozen text prototypes on CPU (no training)"
 	@echo "make attributes-check    Verify prepared attribute prototypes"
 	@echo "make demo              Open local clothing review/export UI at 127.0.0.1:7861"
+	@echo "make api               Run the local AI HTTP service at 127.0.0.1:8001"
+	@echo "make api-check         Check HTTP contracts without neural inference"
+	@echo "make api-key           Prepare a private local service key (does not print it)"
+	@echo "make smoke-http        Test local HTTP with two chosen photos; prompts for paths/category"
 	@echo "make demo-check        Build the UI without server/model inference"
 	@echo "make smoke-drafts      Run one isolated local draft with real models"
 	@echo "make smoke-pipeline    Process two raw photos through segmentation, Marqo and LR"
@@ -216,3 +220,22 @@ smoke-white-output:
 acceptance-local:
 	@test -n "$(CASES)" -a -n "$(OUTPUT)" || (echo "Provide CASES=manifest.json OUTPUT=new_directory"; exit 1)
 	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_MODULES_CACHE="$(CURDIR)/outputs/hf_modules" $(UV) run python scripts/acceptance_local.py --cases "$(CASES)" --output "$(OUTPUT)" --device "$(if $(DEVICE),$(DEVICE),cuda)"
+
+# Local HTTP interface; a single process, without automatic reload.
+.PHONY: api api-check
+
+api:
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_MODULES_CACHE="$(CURDIR)/outputs/hf_modules" $(UV) run uvicorn gardirop_ai_clothing.app:app --host 127.0.0.1 --port $(if $(PORT),$(PORT),8001) --workers 1
+
+api-check:
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/check_api.py
+
+# Manual local HTTP smoke; prompts when photo paths/category are omitted.
+.PHONY: smoke-http
+smoke-http:
+	$(UV) run python scripts/smoke_http.py $(if $(FRONT),--front "$(FRONT)",) $(if $(BACK),--back "$(BACK)",) $(if $(CATEGORY),--category "$(CATEGORY)",) $(if $(CAPTURE_GAP),--capture-gap "$(CAPTURE_GAP)",)
+
+# Shared backend-to-AI credential. Never print or overwrite an existing key.
+.PHONY: api-key
+api-key:
+	$(UV) run python scripts/prepare_api_key.py
