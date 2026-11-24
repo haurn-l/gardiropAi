@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ClothingDemoProvider } from './ClothingDemoContext';
+import { ConversationDemoProvider } from './ConversationDemoContext';
 import { OutfitDemoProvider } from './OutfitDemoContext';
 
 /**
@@ -9,7 +10,9 @@ import { OutfitDemoProvider } from './OutfitDemoContext';
 export function DemoProvider({ children }: { children: ReactNode }) {
   return (
     <ClothingDemoProvider>
-      <OutfitDemoProvider>{children}</OutfitDemoProvider>
+      <OutfitDemoProvider>
+        <ConversationDemoProvider>{children}</ConversationDemoProvider>
+      </OutfitDemoProvider>
     </ClothingDemoProvider>
   );
 }
