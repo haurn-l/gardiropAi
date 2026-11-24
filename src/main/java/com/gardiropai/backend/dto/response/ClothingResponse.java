@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -31,6 +32,8 @@ public class ClothingResponse {
     private Season season;
 
     private ItemStatus status;
+
+    private Instant dirtySince;
 
     private Boolean hasPrint;
 

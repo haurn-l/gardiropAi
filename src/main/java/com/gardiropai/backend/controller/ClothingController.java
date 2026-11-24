@@ -68,6 +68,11 @@ public class ClothingController {
         return ResponseEntity.ok(clothingService.updateClothingStatus(itemId, status));
     }
 
+    @PutMapping("/{itemId}/worn")
+    public ClothingResponse markWorn(@PathVariable Long itemId) {
+        return clothingService.markWorn(itemId);
+    }
+
     @PutMapping("/{itemId}/favorite")
     public ResponseEntity<ClothingResponse> updateFavorite(
             @PathVariable Long itemId, @RequestParam boolean favorite) {
