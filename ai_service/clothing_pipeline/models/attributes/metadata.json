@@ -1,0 +1,30 @@
+{
+  "attribute_version": "clothing-attributes-v1",
+  "encoder_revision": "c56244cc94f92419e8369fa71efdaf403b124ce8",
+  "tokenizer_revision": "41f575766f40e752fdd1383e9565b7f02388c1c4",
+  "prompts_sha256": "b7bb8d55d9f8468755b433eaae7b7037ac6588073b102c293f647a0d5e2968fe",
+  "prompts": [
+    "A product photo of warm winter clothing for cold weather.",
+    "A product photo of lightweight summer clothing for hot weather.",
+    "A product photo of autumn clothing for cool fall weather.",
+    "A product photo of spring clothing for mild weather.",
+    "A product photo of versatile all season clothing worn throughout the year.",
+    "A product photo of plain solid colored clothing without a pattern or graphic print.",
+    "A product photo of clothing with a large graphic print or illustration.",
+    "A product photo of clothing with a visible printed logo, lettering or text.",
+    "A product photo of clothing with a striped pattern.",
+    "A product photo of clothing with a checkered plaid pattern.",
+    "A product photo of clothing with a floral flower pattern.",
+    "A product photo of clothing with a polka dot pattern.",
+    "A product photo of clothing with an all over decorative pattern."
+  ],
+  "training_run": false,
+  "text_encoding_device": "cpu",
+  "tokenizer_files_sha256": {
+    "tokenizer.json": "83051c8005acc696637fe0c62c711ecee4b59083b4cf07ff9ad5f637eb2a3d2a",
+    "tokenizer_config.json": "8571e0cf70f7ae095c5c544ab94b7967e94c79262202d61604da10cbe426cecb",
+    "special_tokens_map.json": "3a60d3bb0808e7e629845031c2d720d33c2aceee1a6c535255de15d45b9f1ac7"
+  },
+  "limits": "Zero-shot suggestions with uncalibrated abstention thresholds; no measured attribute accuracy.",
+  "sha256": "e62c09508a4936bfdc3530aab1ab2a15815c071cd6837b6a9b1218133c43b1ca"
+}

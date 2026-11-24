@@ -1,0 +1,53 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+.env
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.engine
+*.plan
+# Track only the small, verified classifier and attribute artifacts.
+/models/*
+!/models/parent_lr/
+/models/parent_lr/*
+!/models/parent_lr/weights.npz
+!/models/parent_lr/metadata.json
+!/models/attributes/
+/models/attributes/*
+!/models/attributes/prototypes.npz
+!/models/attributes/metadata.json
+checkpoints/
+outputs/
+
+# Test coverage
+.coverage
+.coverage.*
+htmlcov/
+
+# Local-only tools, personal regression photos and superseded API drafts.
+/devtools/
+/tests/fixtures/dynamic/
+/docs/backend_contract_v1/
+
+# Generated archives, alternative environments and private model dumps.
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.joblib
+*.pkl
+*.pickle
+*.ckpt
+.venv-*/
+venv/
+.env.*
+!.env.example
+
+# Paylasilmayacak test fotograflari
+/tests/fixtures/marqo/G001_front_input.png
+/tests/fixtures/pipeline/G001_front_raw.jpg
+/tests/fixtures/pipeline/G001_back_raw.jpg

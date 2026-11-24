@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "model_kind": "parent_logistic_regression",
+  "embedding_dim": 1536,
+  "num_classes": 20,
+  "taxonomy_version": "clothing20-v1",
+  "taxonomy": [
+    [
+      "üst",
+      "Gömlek"
+    ],
+    [
+      "üst",
+      "T-shirt"
+    ],
+    [
+      "üst",
+      "Bluz"
+    ],
+    [
+      "üst",
+      "Kazak"
+    ],
+    [
+      "üst",
+      "Hırka"
+    ],
+    [
+      "üst",
+      "Kapüşonlu üst"
+    ],
+    [
+      "üst",
+      "Atlet"
+    ],
+    [
+      "üst",
+      "Spor üst"
+    ],
+    [
+      "üst",
+      "Tunik"
+    ],
+    [
+      "alt",
+      "Pantolon"
+    ],
+    [
+      "alt",
+      "Jean"
+    ],
+    [
+      "alt",
+      "Etek"
+    ],
+    [
+      "alt",
+      "Şort"
+    ],
+    [
+      "alt",
+      "Yağmurluk pantolonu"
+    ],
+    [
+      "alt",
+      "Kışlık pantolon"
+    ],
+    [
+      "dış",
+      "Ceket"
+    ],
+    [
+      "dış",
+      "Blazer"
+    ],
+    [
+      "dış",
+      "Kot ceket"
+    ],
+    [
+      "dış",
+      "Yağmurluk"
+    ],
+    [
+      "dış",
+      "Kışlık ceket"
+    ]
+  ],
+  "marqo_repo_id": "Marqo/marqo-fashionSigLIP",
+  "marqo_revision": "c56244cc94f92419e8369fa71efdaf403b124ce8",
+  "fusion_method": "concat_unit_front_back_div_sqrt2",
+  "view_order": [
+    "FRONT",
+    "BACK"
+  ],
+  "parent_class_ids": {
+    "alt": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "dış": [
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "üst": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "artifact_sha256": "5546b1bcb3e9676ca3e55099626ffba8b1b567c1cbec8af43031fcab064afe40",
+  "source": {
+    "archive": "final_visual40_20261123T200432_105045Z_results.zip",
+    "archive_sha256": "6fa780ef942b86f5d08218eff21182c29c4556f5ba3fc00f38a4dab7e5964700",
+    "member": "technical/parent_lr.npz",
+    "original_head_archive": "decision_09_final_20261123T170255_276636Z_results.zip",
+    "original_head_archive_sha256": "db658ba378dc27cb5f6b2d69fe48c17170958922541f6faa5563600b6ab98c11"
+  },
+  "training_preprocessing_profile": "legacy_dataset_white_square_fixed90ccw_384_v1",
+  "current_pipeline_compatibility_verified": false,
+  "fresh_final_test": false,
+  "deployment_ready": false
+}
