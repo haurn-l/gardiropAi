@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, usePreventRemove } from 'expo-router';
 import type { RatingValue } from '../../../shared/ui/rating.types';
 import { OutfitDetailScreen } from '../../outfits/screens/OutfitDetailScreen';
 import { useOutfitDemo } from '../demo/OutfitDemoContext';
@@ -15,6 +15,8 @@ export function OutfitDetailController() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const busyRef = useRef(false);
+  // Bekleyen işlemde Android geri tuşu ve iOS geri hareketi de ekranı kapatmamalı.
+  const disablePrevention = usePreventRemove(busy);
 
   const item = id ? getOutfit(id) : undefined;
 
@@ -36,6 +38,9 @@ export function OutfitDetailController() {
   }
 
   function handleBack() {
+    if (busyRef.current) {
+      return;
+    }
     if (router.canGoBack()) {
       router.back();
     } else {
@@ -55,6 +60,10 @@ export function OutfitDetailController() {
   function handleDelete(targetId: string) {
     void runAction(async () => {
       await removeOutfit(targetId);
+      // Silme başarılı; listeye dönmeden önce gezinme kilidini kaldır.
+      busyRef.current = false;
+      setBusy(false);
+      disablePrevention();
       handleBack();
     });
   }
