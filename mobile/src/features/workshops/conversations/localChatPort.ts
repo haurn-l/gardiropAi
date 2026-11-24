@@ -15,33 +15,34 @@ function pickSuggestionItems(
   const pinned = eligible.filter((item) => pinnedSet.has(item.id));
   const unpinned = eligible.filter((item) => !pinnedSet.has(item.id));
 
-  // Yenilemede önce önceki öneride olmayan temiz parçaları tercih et.
-  const freshFirst = [
-    ...unpinned.filter((item) => !previousSet.has(item.id)),
-    ...unpinned.filter((item) => previousSet.has(item.id)),
-  ];
+  const fresh = unpinned.filter((item) => !previousSet.has(item.id));
+  const repeated = unpinned.filter((item) => previousSet.has(item.id));
 
   const picked: ClothingRecord[] = [...pinned];
   const usedCategories = new Set(picked.map((item) => item.category));
 
-  for (const candidate of freshFirst) {
-    if (picked.length >= MAX_SUGGESTION_ITEMS) {
-      break;
-    }
-    if (!usedCategories.has(candidate.category)) {
+  const addFrom = (pool: readonly ClothingRecord[], requireUniqueCategory: boolean) => {
+    for (const candidate of pool) {
+      if (picked.length >= MAX_SUGGESTION_ITEMS) {
+        break;
+      }
+      if (picked.some((item) => item.id === candidate.id)) {
+        continue;
+      }
+      if (requireUniqueCategory && usedCategories.has(candidate.category)) {
+        continue;
+      }
       picked.push(candidate);
       usedCategories.add(candidate.category);
     }
-  }
+  };
 
-  for (const candidate of freshFirst) {
-    if (picked.length >= MAX_SUGGESTION_ITEMS) {
-      break;
-    }
-    if (!picked.some((item) => item.id === candidate.id)) {
-      picked.push(candidate);
-    }
-  }
+  // Önce önceki öneride olmayan temiz parçaları (önce farklı kategorilerden, sonra kalanlardan) seç.
+  addFrom(fresh, true);
+  addFrom(fresh, false);
+  // Yeterli yeni parça yoksa önceki temiz parçalardan tamamla.
+  addFrom(repeated, true);
+  addFrom(repeated, false);
 
   return picked;
 }
