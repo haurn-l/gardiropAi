@@ -1,6 +1,7 @@
 package com.gardiropai.backend.controller;
 
 import com.gardiropai.backend.dto.request.ClothingCreateRequest;
+import com.gardiropai.backend.dto.request.ClothingDetailsRequest;
 import com.gardiropai.backend.dto.response.ClothingResponse;
 import com.gardiropai.backend.enums.Category;
 import com.gardiropai.backend.enums.ItemStatus;
@@ -54,6 +55,12 @@ public class ClothingController {
         return ResponseEntity.ok(clothingService.getClothing(itemId));
     }
 
+    @PutMapping("/{itemId}/details")
+    public ClothingResponse updateDetails(
+            @PathVariable Long itemId, @Valid @RequestBody ClothingDetailsRequest request) {
+        return clothingService.updateDetails(itemId, request);
+    }
+
     @PutMapping("/{itemId}/status")
     public ResponseEntity<ClothingResponse> updateStatus(
             @PathVariable Long itemId,
@@ -71,6 +78,11 @@ public class ClothingController {
     public ResponseEntity<ClothingResponse> rateClothing(
             @PathVariable Long itemId, @RequestParam @Min(1) @Max(5) int ratingScore) {
         return ResponseEntity.ok(clothingService.rateClothing(itemId, ratingScore));
+    }
+
+    @DeleteMapping("/{itemId}/rate")
+    public ClothingResponse clearRating(@PathVariable Long itemId) {
+        return clothingService.rateClothing(itemId, null);
     }
 
     @DeleteMapping("/{itemId}")

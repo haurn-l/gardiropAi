@@ -1,8 +1,10 @@
 package com.gardiropai.backend.serviceIMPL;
 
 import com.gardiropai.backend.dto.request.ClothingCreateRequest;
+import com.gardiropai.backend.dto.request.ClothingDetailsRequest;
 import com.gardiropai.backend.dto.response.ClothingResponse;
 import com.gardiropai.backend.entity.ClothingItem;
+import com.gardiropai.backend.entity.ClothingPhoto;
 import com.gardiropai.backend.entity.User;
 import com.gardiropai.backend.enums.Category;
 import com.gardiropai.backend.enums.ItemStatus;
@@ -19,6 +21,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * İş mantığının çalıştırıldığı, veritabanı kayıtlarının yapıldığı ana sınıf.
@@ -34,27 +37,39 @@ public class ClothingServiceImpl implements ClothingService {
     private final UserRepository userRepository;
     private final ClothingResponseMapper responseMapper;
     private final JsonMapper jsonMapper;
+    private final LocalClothingPhotos photos;
 
     @Override
     @Transactional
     public ClothingResponse addClothingItem(ClothingCreateRequest request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı. ID:" + request.getUserId()));
+        return responseMapper.toResponse(saveClothing(user, request.getImageUrl(), request));
+    }
 
-        ClothingItem newItem = ClothingItem.builder()
-                .user(user)
-                .name(request.getName())
-                .imageUrl(request.getImageUrl())
-                .category(request.getCategory())
-                .subCategory(request.getSubCategory())
-                .season(request.getSeason())
-                .color(request.getColor())
-                .hasPrint(request.getHasPrint())
-                .customTags(request.getTags() == null ? null : jsonMapper.writeValueAsString(request.getTags()))
-                .status(ItemStatus.TEMIZ)
-                .build();
+    @Override
+    @Transactional
+    public ClothingResponse confirmPhoto(UUID uploadId, ClothingDetailsRequest request) {
+        ClothingPhoto photo = photos.lock(uploadId);
+        if (photo.getClothingItemId() != null) {
+            return getClothing(photo.getClothingItemId());
+        }
 
-        return responseMapper.toResponse(clothingRepository.save(newItem));
+        User user = userRepository.findFirstByOrderByIdAsc().orElseGet(() -> {
+            userRepository.ensureDemoUser();
+            return userRepository.findFirstByOrderByIdAsc().orElseThrow();
+        });
+        ClothingItem item = saveClothing(user, photos.url(uploadId), request);
+        photo.setClothingItemId(item.getId());
+        return responseMapper.toResponse(item);
+    }
+
+    @Override
+    @Transactional
+    public ClothingResponse updateDetails(Long itemId, ClothingDetailsRequest request) {
+        ClothingItem item = findClothing(itemId);
+        applyDetails(item, request);
+        return responseMapper.toResponse(item);
     }
 
     @Override
@@ -105,7 +120,7 @@ public class ClothingServiceImpl implements ClothingService {
 
     @Override
     @Transactional
-    public ClothingResponse rateClothing(Long itemId, int ratingScore) {
+    public ClothingResponse rateClothing(Long itemId, Integer ratingScore) {
         ClothingItem item = findClothing(itemId);
         item.setUserRating(ratingScore);
         return responseMapper.toResponse(item);
@@ -118,6 +133,7 @@ public class ClothingServiceImpl implements ClothingService {
             throw new ClothingNotFoundException("Silinecek kıyafet bulunamadı. ID:" + itemId);
         }
         clothingRepository.deleteById(itemId);
+        photos.removeForClothing(itemId);
     }
 
     @Override
@@ -130,6 +146,26 @@ public class ClothingServiceImpl implements ClothingService {
     private ClothingItem findClothing(Long itemId) {
         return clothingRepository.findById(itemId)
                 .orElseThrow(() -> new ClothingNotFoundException("Kıyafet bulunamadı. ID: " + itemId));
+    }
+
+    private ClothingItem saveClothing(User user, String imageUrl, ClothingDetailsRequest request) {
+        ClothingItem item = ClothingItem.builder()
+                .user(user)
+                .imageUrl(imageUrl)
+                .status(ItemStatus.TEMIZ)
+                .build();
+        applyDetails(item, request);
+        return clothingRepository.save(item);
+    }
+
+    private void applyDetails(ClothingItem item, ClothingDetailsRequest request) {
+        item.setName(request.getName());
+        item.setCategory(request.getCategory());
+        item.setSubCategory(request.getSubCategory());
+        item.setSeason(request.getSeason());
+        item.setColor(request.getColor());
+        item.setHasPrint(request.getHasPrint());
+        item.setCustomTags(request.getTags() == null ? null : jsonMapper.writeValueAsString(request.getTags()));
     }
 
     private boolean matchesSearch(ClothingResponse item, String term) {
