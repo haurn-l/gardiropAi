@@ -74,6 +74,11 @@ export function BottomBarWorkshop() {
           variant="secondary"
           onPress={() => router.push('/outfit-history')}
         />
+        <Button
+                  label="Sohbet akışı"
+                  variant="secondary"
+                  onPress={() => router.push('/conversation-flow')}
+                />
 
         <View style={styles.notes}>
           <Text variant="strong">Kontrol sırası</Text>

@@ -8,6 +8,7 @@ import { Header } from '../../../shared/ui/Header';
 import { Text } from '../../../shared/ui/Text';
 import { OutfitsScreen } from '../../outfits/screens/OutfitsScreen';
 import { useOutfitDemo } from '../demo/OutfitDemoContext';
+import { useConversationDemo } from '../demo/ConversationDemoContext';
 
 type DemoViewMode = 'normal' | 'loading' | 'error' | 'empty';
 
@@ -26,6 +27,7 @@ const viewModeLabels: Record<DemoViewMode, string> = {
  */
 export function OutfitsListController() {
   const { items, sort, simulateError, setSort, setSimulateError } = useOutfitDemo();
+  const { createConversation } = useConversationDemo();
   const [viewMode, setViewMode] = useState<DemoViewMode>('normal');
 
   function handleOpen(id: string) {
@@ -33,7 +35,8 @@ export function OutfitsListController() {
   }
 
   function handleCreateRequest() {
-    router.push({ pathname: '/navigation-preview', params: { kind: 'chat' } });
+    const created = createConversation();
+    router.push({ pathname: '/conversation-flow/[id]', params: { id: created.id } });
   }
 
   function handleCycleViewMode() {
