@@ -1,0 +1,11 @@
+{
+  "source_archive": "final_visual40_20261123T200432_105045Z_results.zip",
+  "source_archive_sha256": "6fa780ef942b86f5d08218eff21182c29c4556f5ba3fc00f38a4dab7e5964700",
+  "case_id": "G001",
+  "supplied_parent": "üst",
+  "files": {
+    "G001_front_raw.jpg": "07b9da5b250d86711ea481dfe27d3a08607ad1c669fb8206070456fbcb01475d",
+    "G001_back_raw.jpg": "3f13b32bfb672e2e3ca7d7579a3e51189c4443e00780222368a79f41ccb5611e"
+  },
+  "scope": "Unchanged raw dataset photos for one functional integration check; no accuracy assertion. The source is sideways, EXIF orientation1. No dataset-specific fixed90 rule is applied to production photos."
+}

@@ -1,0 +1,986 @@
+{
+  "schema_version": 1,
+  "scope": "Implementation regression against recorded final_visual40 outputs; not accuracy or a new evaluation.",
+  "source_archive": "final_visual40_20261123T200432_105045Z_results.zip",
+  "source_archive_sha256": "6fa780ef942b86f5d08218eff21182c29c4556f5ba3fc00f38a4dab7e5964700",
+  "source_predictions_sha256": "81743831a6288fdefd28900bdf92beaa592a63f6600d2367c12cab1091a8a9b5",
+  "source_model_inputs_sha256": "d6af6d601344b52347782d04cb0b3e74dcda63b1facd37e3eb1513bdf2eb3ff1",
+  "features_sha256": "60f82ade6bfbe4952d2e7101254943afc3a0b3f2325431481d310b92de4431c1",
+  "classifier_sha256": "5546b1bcb3e9676ca3e55099626ffba8b1b567c1cbec8af43031fcab064afe40",
+  "encoder_revision": "c56244cc94f92419e8369fa71efdaf403b124ce8",
+  "fusion_method": "concat_unit_front_back_div_sqrt2",
+  "view_order": [
+    "FRONT",
+    "BACK"
+  ],
+  "score_kind": "linear_margin_not_probability",
+  "score_absolute_tolerance": 5e-06,
+  "notes": [
+    "Fresh Colab CPU FP32 view features copied unchanged; no image inference in this check.",
+    "Original supplied parent categories are preserved, including G027 and G032. These are not ground truth labels.",
+    "Independent float64 normalization followed by float32 fusion can change recorded margins slightly; absolute tolerance is 5e-6.",
+    "Matching recorded predictions is implementation consistency, never 40/40 accuracy."
+  ],
+  "cases": [
+    {
+      "case_id": "G001",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 0,
+          "label": "Gömlek",
+          "score": 4.853901131678762,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 2,
+          "label": "Bluz",
+          "score": 1.4032989496500123,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 7,
+          "label": "Spor üst",
+          "score": 0.3907105277406727,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G002",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 4.0412877107105984,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 4,
+          "label": "Hırka",
+          "score": 3.3783643772284186,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 0,
+          "label": "Gömlek",
+          "score": 0.41358496582400806,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G003",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 2,
+          "label": "Bluz",
+          "score": 3.9185047708170355,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 8,
+          "label": "Tunik",
+          "score": 3.1354489895994706,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 0.574020834065595,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G004",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 6.331803837109112,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 1.8542462922308935,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": -0.5161789244334479,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G005",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": 2.869608912364659,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 1.2998149779701835,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 0.5772956799775326,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G006",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 7,
+          "label": "Spor üst",
+          "score": 5.444799624235009,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 4,
+          "label": "Hırka",
+          "score": 2.2878042993736463,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 1.469449699830181,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G007",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 1,
+          "label": "T-shirt",
+          "score": 3.944020990040651,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 2,
+          "label": "Bluz",
+          "score": 2.206124395091547,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 6,
+          "label": "Atlet",
+          "score": 0.27885944329712475,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G008",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 8,
+          "label": "Tunik",
+          "score": 5.952032025031709,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 1,
+          "label": "T-shirt",
+          "score": 1.9910261150004747,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 2,
+          "label": "Bluz",
+          "score": 0.6897958783679539,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G009",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": 2.9595063450915413,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 1.069819483756116,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": -0.24493166879962525,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G010",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 1,
+          "label": "T-shirt",
+          "score": 3.5109353342438276,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 7,
+          "label": "Spor üst",
+          "score": 1.1085958067983213,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 0.5409033972818322,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G011",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 5,
+          "label": "Kapüşonlu üst",
+          "score": 4.926340901578855,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 7,
+          "label": "Spor üst",
+          "score": 2.259525754611147,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 1.1022689341040965,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G012",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 6.016551393856669,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 0.46547939159573626,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": -0.6385883429706881,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G013",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": 3.1376379993122274,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 1.352012697747814,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": -0.10406085279570432,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G014",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 3.4213267749859497,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 4,
+          "label": "Hırka",
+          "score": 1.4484580281932746,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 2,
+          "label": "Bluz",
+          "score": 0.5258966355235257,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G015",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 4.006961209298598,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 10,
+          "label": "Jean",
+          "score": 1.2754190486025703,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 13,
+          "label": "Yağmurluk pantolonu",
+          "score": -1.159009056402296,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G016",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 4.231156336955558,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 2.112605534078432,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": -1.4066278247299566,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G017",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 4,
+          "label": "Hırka",
+          "score": 4.7456415483476,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 1.718237986370164,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 7,
+          "label": "Spor üst",
+          "score": 0.3750541466011031,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G018",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 1,
+          "label": "T-shirt",
+          "score": 4.138640453672123,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 7,
+          "label": "Spor üst",
+          "score": 3.8648655931513707,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": -0.31514368900197604,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G019",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 0,
+          "label": "Gömlek",
+          "score": 5.8892918602422695,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 2,
+          "label": "Bluz",
+          "score": 2.013335984758952,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 1,
+          "label": "T-shirt",
+          "score": 0.12414576441181657,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G020",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 5,
+          "label": "Kapüşonlu üst",
+          "score": 5.7031251771528595,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 3,
+          "label": "Kazak",
+          "score": 2.4469962805981242,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 7,
+          "label": "Spor üst",
+          "score": 0.1655909398501852,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G021",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 6.296090759073345,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 1.5292622775029137,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": -0.6204873299496283,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G022",
+      "selected_parent": "üst",
+      "top3": [
+        {
+          "class_id": 2,
+          "label": "Bluz",
+          "score": 4.872910829686722,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 8,
+          "label": "Tunik",
+          "score": 1.2575391230874997,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 0,
+          "label": "Gömlek",
+          "score": 0.32326860382848327,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G023",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 4.138631243137809,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 0.464263252102016,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 10,
+          "label": "Jean",
+          "score": 0.11595943930068309,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G024",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 4.718880820104945,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 1.8216579263092931,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 0.20950543044399006,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G025",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 4.027586519101799,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 1.741173403740588,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 0.15214540951570332,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G026",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 6.89910271861761,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 0.6387746473653182,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": -0.6227255051526435,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G027",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 3.0349625002988105,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 1.4714197735884873,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 0.6627705122282869,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G028",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 14,
+          "label": "Kışlık pantolon",
+          "score": 3.5676919432554053,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 13,
+          "label": "Yağmurluk pantolonu",
+          "score": 2.076312000214139,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 0.2052938178156401,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G029",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": 3.9221741160679877,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 1.698635653128814,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": -0.8445115451228575,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G030",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 2.763138667688372,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 2.144194527499172,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 18,
+          "label": "Yağmurluk",
+          "score": -0.3311143858220347,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G031",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 3.974534688528209,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 13,
+          "label": "Yağmurluk pantolonu",
+          "score": -0.0794415915925839,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 10,
+          "label": "Jean",
+          "score": -0.2396155010206873,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G032",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 3.7421174409671716,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 1.230076859611488,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 18,
+          "label": "Yağmurluk",
+          "score": 0.30025596634633045,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G033",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 10,
+          "label": "Jean",
+          "score": 4.552684671240671,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 0.6582131012568111,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 14,
+          "label": "Kışlık pantolon",
+          "score": -0.4210419600210181,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G034",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 3.9193602831309535,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 1.2877615593632001,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 18,
+          "label": "Yağmurluk",
+          "score": -0.3437240232695207,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G035",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 1.7147703189437369,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 1.4198671258096867,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 18,
+          "label": "Yağmurluk",
+          "score": -0.36428024385525726,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G036",
+      "selected_parent": "alt",
+      "top3": [
+        {
+          "class_id": 11,
+          "label": "Etek",
+          "score": 5.163089249565173,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 12,
+          "label": "Şort",
+          "score": 0.5557019629241284,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 9,
+          "label": "Pantolon",
+          "score": 0.35501724228296566,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G037",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 18,
+          "label": "Yağmurluk",
+          "score": 2.228104819827279,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 0.9813181584043156,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 0.9621701629401362,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G038",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 3.6738662324719735,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 1.1780345766222944,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": 0.9939293122446292,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G039",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": 3.1388628024404204,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 2.5745185084076634,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": -0.7255000510091224,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    },
+    {
+      "case_id": "G040",
+      "selected_parent": "dış",
+      "top3": [
+        {
+          "class_id": 16,
+          "label": "Blazer",
+          "score": 4.266329191695306,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 15,
+          "label": "Ceket",
+          "score": 0.6810563948923081,
+          "score_kind": "linear_margin_not_probability"
+        },
+        {
+          "class_id": 19,
+          "label": "Kışlık ceket",
+          "score": -0.4125730259158671,
+          "score_kind": "linear_margin_not_probability"
+        }
+      ]
+    }
+  ]
+}
