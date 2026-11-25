@@ -12,6 +12,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findFirstByOrderByIdAsc();
 
+    default User getOrCreateDemoUser() {
+        return findFirstByOrderByIdAsc().orElseGet(() -> {
+            ensureDemoUser();
+            return findFirstByOrderByIdAsc().orElseThrow();
+        });
+    }
+
     @Modifying
     @Query(value = "insert into users (username) values ('demo') on conflict (username) do nothing",
            nativeQuery = true)
