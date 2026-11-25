@@ -114,3 +114,11 @@ def test_partial_weight_loading_is_never_accepted(local_model, tmp_path, monkeyp
     with pytest.raises(ModelArtifactError) as error:
         module.load_birefnet_segmenter(tmp_path / "unused.yaml", device="cpu")
     assert "fully match" in str(error.value.__cause__)
+
+
+def test_shared_export_loader_uses_the_same_verified_frozen_model(local_model, tmp_path):
+    _, calls, model = local_model
+    loaded, device = module.load_birefnet_model(tmp_path / "unused.yaml", device="cpu")
+    assert loaded is model and device == "cpu"
+    assert not loaded.training and not loaded.parameter.requires_grad
+    assert len(calls) == 1

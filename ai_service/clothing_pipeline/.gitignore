@@ -55,3 +55,12 @@ venv/
 # Machine-specific model paths; generated locally.
 /configs/model_manifest.local.yaml
 /configs/api_key.local
+
+# Additional local-only tools, settings and temporary files.
+/local_lab.py
+/local_lab/
+/configs/*.local
+/configs/*.local.*
+/.cache/
+/tmp/
+/temp/

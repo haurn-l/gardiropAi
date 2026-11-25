@@ -11,6 +11,7 @@ from gardirop_ai_clothing.contracts import FUSION_METHOD, TAXONOMY_VERSION, Main
 from gardirop_ai_clothing.embeddings.marqo import MARQO_MODEL_NAME, MarqoEncoder, load_marqo_encoder
 from gardirop_ai_clothing.errors import ConfigurationError, InferenceError
 from gardirop_ai_clothing.image.birefnet_local import BIREFNET_MODEL_NAME, load_birefnet_segmenter
+from gardirop_ai_clothing.image.birefnet_tensorrt import load_configured_segmenter
 from gardirop_ai_clothing.image.segmentation import BiRefNetSegmenter
 from gardirop_ai_clothing.labeling.artifacts import (
     CLASSIFIER_MODEL_NAME,
@@ -27,6 +28,7 @@ from gardirop_ai_clothing.pipeline import (
     PreparedGarmentImage,
 )
 from gardirop_ai_clothing.schemas import AnalysisVersions, ClothingTags, ViewType
+from gardirop_ai_clothing.view_snapshot import StoredGarmentImage
 
 PREPROCESSING_VERSION = "clothing-image-v2-dynamic"
 
@@ -34,12 +36,13 @@ PREPROCESSING_VERSION = "clothing-image-v2-dynamic"
 @dataclass(frozen=True)
 class AnalyzedView:
     view_type: ViewType
-    prepared: PreparedGarmentImage
+    prepared: PreparedGarmentImage | StoredGarmentImage
     embedding: np.ndarray
     options: ImagePreparationOptions
     preprocessing_version: str = PREPROCESSING_VERSION
     embedding_revision: str = MARQO_REVISION
     segmentation_revision: str = BIREFNET_REVISION
+    encoder_precision: str = "fp32"
 
 
 @dataclass(frozen=True)
@@ -97,6 +100,7 @@ class ClothingAnalysisService:
         max_upload_bytes: int = 20 * 1024 * 1024,
         max_pixels: int = 24_000_000,
         attributes: AttributeService | None = None,
+        include_transparent_webp: bool = True,
     ):
         self.manager = manager
         self.attributes = attributes
@@ -105,6 +109,7 @@ class ClothingAnalysisService:
             default_options=default_options,
             max_upload_bytes=max_upload_bytes,
             max_pixels=max_pixels,
+            include_transparent_webp=include_transparent_webp,
         )
         self.classifier = ParentClassificationService(manager)
 
@@ -134,7 +139,13 @@ class ClothingAnalysisService:
                     "Free GPU memory or explicitly retry with device='cpu'."
                 ) from exc
             raise
-        return AnalyzedView(view_type=view, prepared=prepared, embedding=embedding, options=options)
+        return AnalyzedView(
+            view_type=view,
+            prepared=prepared,
+            embedding=embedding,
+            options=options,
+            encoder_precision=encoder.precision,
+        )
 
     def finish_pair(
         self,
@@ -153,6 +164,13 @@ class ClothingAnalysisService:
                 or view.segmentation_revision != BIREFNET_REVISION
             ):
                 raise ValueError("View producer versions differ from the active pipeline.")
+        if (
+            front.encoder_precision not in {"fp32", "fp16"}
+            or front.encoder_precision != back.encoder_precision
+        ):
+            raise ValueError(
+                "View encoder precisions differ. Reprocess both photographs with one precision."
+            )
         pair = self.classifier.analyze_views(
             front=front.embedding,
             back=back.embedding,
@@ -194,7 +212,7 @@ class ClothingAnalysisService:
                 "views": {
                     name: {
                         "source_size": list(view.prepared.source_size),
-                        "output_size": list(view.prepared.white_rgb.size),
+                        "output_size": list(view.prepared.output_size),
                         "encoded_bytes": len(view.prepared.delivery_webp),
                         "rotation_degrees": view.prepared.rotation_degrees,
                     }
@@ -217,6 +235,7 @@ class ClothingAnalysisService:
                 "view_order": ["FRONT", "BACK"],
                 "norm": float(np.linalg.norm(pair.embedding)),
                 "encoder_revision": MARQO_REVISION,
+                "encoder_precision": front.encoder_precision,
             },
         }
         return AnalyzedClothingPair(
@@ -263,8 +282,14 @@ def create_analysis_service(settings: Settings) -> ClothingAnalysisService:
     path = settings.model_manifest_path.expanduser().resolve()
     manager = ModelManager(
         {
-            BIREFNET_MODEL_NAME: lambda: load_birefnet_segmenter(path, device=settings.device),
-            MARQO_MODEL_NAME: lambda: load_marqo_encoder(path, device=settings.device),
+            BIREFNET_MODEL_NAME: lambda: (
+                load_birefnet_segmenter(path, device=settings.device)
+                if settings.segmentation_backend == "pytorch"
+                else load_configured_segmenter(settings)
+            ),
+            MARQO_MODEL_NAME: lambda: load_marqo_encoder(
+                path, device=settings.device, precision=settings.marqo_precision
+            ),
             CLASSIFIER_MODEL_NAME: lambda: load_classifier_from_manifest(path),
         },
         max_concurrent_gpu_jobs=1,
@@ -272,6 +297,7 @@ def create_analysis_service(settings: Settings) -> ClothingAnalysisService:
     return ClothingAnalysisService(
         manager,
         attributes=AttributeService(settings.attribute_bank_dir),
+        include_transparent_webp=settings.draft_storage_profile != "compact",
         max_upload_bytes=settings.max_upload_mb * 1024 * 1024,
         max_pixels=settings.max_image_pixels,
         default_options=ImagePreparationOptions(

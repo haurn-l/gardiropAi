@@ -35,9 +35,8 @@ class LocalBiRefNetSegmenter(BiRefNetSegmenter):
         self.precision = "fp16" if device == "cuda" else "fp32"
 
 
-def load_birefnet_segmenter(
-    manifest_path: str | Path, *, device: str = "auto"
-) -> LocalBiRefNetSegmenter:
+def load_birefnet_model(manifest_path: str | Path, *, device: str = "auto"):
+    """Shared frozen checkpoint construction for production and offline export."""
     files = verified_model_files(Path(manifest_path), BIREFNET_MODEL_NAME)
     folder = files["config.json"].absolute().parent
     for name, file in files.items():
@@ -79,6 +78,17 @@ def load_birefnet_segmenter(
         raise ModelArtifactError(
             "Frozen BiRefNet could not be initialized from local files."
         ) from exc
+
+    return model, resolved
+
+
+def load_birefnet_segmenter(
+    manifest_path: str | Path, *, device: str = "auto"
+) -> LocalBiRefNetSegmenter:
+    model, resolved = load_birefnet_model(manifest_path, device=device)
+    import torch
+
+    dtype = torch.float16 if resolved == "cuda" else torch.float32
 
     def run(normalized_chw: np.ndarray) -> np.ndarray:
         validate_birefnet_input(normalized_chw)

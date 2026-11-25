@@ -703,7 +703,9 @@ class DraftService:
 
 def create_draft_service(settings: Settings) -> DraftService:
     analysis = create_analysis_service(settings)
-    repository = LocalDraftRepository(settings.draft_root)
+    repository = LocalDraftRepository(
+        settings.draft_root, compact=settings.draft_storage_profile == "compact"
+    )
     try:
         return DraftService(
             repository,

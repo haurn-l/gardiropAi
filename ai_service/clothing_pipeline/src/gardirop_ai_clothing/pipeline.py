@@ -67,7 +67,8 @@ class PreparedGarmentImage:
     original_cutout: Image.Image
     aligned_rgba: Image.Image
     white_rgb: Image.Image
-    transparent_webp: bytes
+    # Compact API jobs keep RGBA pixels for analysis but omit this unused encoding.
+    transparent_webp: bytes | None
 
     cleanup_reason: str
     removed_components: int
@@ -82,9 +83,17 @@ class PreparedGarmentImage:
     white_webp: bytes | None = None
 
     @property
+    def output_size(self) -> tuple[int, int]:
+        return self.white_rgb.size
+
+    @property
     def delivery_webp(self) -> bytes:
         """Primary stored/exported bytes; preserve old confirmed records verbatim."""
-        return self.white_webp if self.white_webp is not None else self.transparent_webp
+        if self.white_webp is not None:
+            return self.white_webp
+        if self.transparent_webp is None:
+            raise ImageProcessingError("No delivery image was encoded.")
+        return self.transparent_webp
 
     @property
     def delivery_profile(self) -> str:
@@ -120,12 +129,14 @@ class ClothingImagePipeline:
         max_upload_bytes: int = DEFAULT_MAX_UPLOAD_BYTES,
         max_pixels: int = DEFAULT_MAX_PIXELS,
         default_options: ImagePreparationOptions | None = None,
+        include_transparent_webp: bool = True,
     ) -> None:
         if any(
             isinstance(n, bool) or not isinstance(n, int) or n < 1
             for n in (max_upload_bytes, max_pixels)
         ):
             raise ConfigurationError("Image input limits must be positive integers.")
+        self.include_transparent_webp = include_transparent_webp
         self._segmenter = segmenter
         self.max_upload_bytes = max_upload_bytes
         self.max_pixels = max_pixels
@@ -197,7 +208,9 @@ class ClothingImagePipeline:
         )
 
         # 6. Main output is actual white RGB WebP; RGBA stays internal for mask/color diagnostics.
-        transparent_webp = encode_transparent_webp(canonical.rgba)
+        transparent_webp = (
+            encode_transparent_webp(canonical.rgba) if self.include_transparent_webp else None
+        )
 
         return PreparedGarmentImage(
             source_size=rgb.size,

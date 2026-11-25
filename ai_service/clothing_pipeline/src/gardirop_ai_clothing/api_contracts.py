@@ -53,6 +53,19 @@ class HealthResponse(ApiModel):
     )
 
 
+class ReadinessResponse(ApiModel):
+    status: Literal["READY", "NOT_READY"]
+    models_warmed: bool = Field(alias="modelsWarmed")
+    loaded_models: tuple[str, ...] = Field(default=(), alias="loadedModels")
+    startup_preparation_seconds: float | None = Field(
+        default=None, alias="startupPreparationSeconds", ge=0
+    )
+    device: str | None = None
+    segmentation_backend: Literal["pytorch", "tensorrt_with_pytorch_fallback"] | None = Field(
+        default=None, alias="segmentationBackend"
+    )
+
+
 class CategoryInfo(ApiModel):
     code: ApiCategory
     label: str

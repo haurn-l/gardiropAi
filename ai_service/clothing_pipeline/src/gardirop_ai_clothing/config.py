@@ -44,15 +44,26 @@ class Settings(BaseSettings):
     api_key: SecretStr | None = None
     api_key_file: Path = PROJECT_ROOT / "configs" / "api_key.local"
 
+    api_compact_storage: bool = True
+    api_preload_models: bool = True
+    api_release_warmup_cache: bool = False
+    draft_storage_profile: Literal["full", "compact"] = "full"
+
     # Logging
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
     # GPU / inference
     device: Literal["auto", "cpu", "cuda"] = "auto"
+    # Auto selects the accepted mixed FP16 policy on CUDA; CPU remains FP32.
+    marqo_precision: Literal["auto", "fp32", "fp16"] = "auto"
     max_concurrent_gpu_jobs: int = Field(
         default=1,
         ge=1,
     )
+
+    # Explicit opt-in: the standard API keeps the accepted PyTorch FP16 path.
+    segmentation_backend: Literal["pytorch", "tensorrt"] = "pytorch"
+    tensorrt_run: Path | None = None
 
     # Input limits
     max_upload_mb: int = Field(

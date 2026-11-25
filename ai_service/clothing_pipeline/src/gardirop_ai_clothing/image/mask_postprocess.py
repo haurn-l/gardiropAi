@@ -180,22 +180,25 @@ def create_cropped_rgba(
     if not 0 <= alpha_threshold < 255:
         raise ImageProcessingError("Invalid crop alpha threshold.")
 
-    yy, xx = np.nonzero(alpha > alpha_threshold)
+    support = alpha > alpha_threshold
+    rows = np.flatnonzero(support.any(axis=1))
+    columns = np.flatnonzero(support.any(axis=0))
 
-    if not len(xx):
+    if not len(columns):
         raise ImageProcessingError("Cannot crop an empty foreground mask.")
 
     padding_x = round(rgb.width * padding_fraction)
     padding_y = round(rgb.height * padding_fraction)
 
     box = (
-        max(0, int(xx.min()) - padding_x),
-        max(0, int(yy.min()) - padding_y),
-        min(rgb.width, int(xx.max()) + 1 + padding_x),
-        min(rgb.height, int(yy.max()) + 1 + padding_y),
+        max(0, int(columns[0]) - padding_x),
+        max(0, int(rows[0]) - padding_y),
+        min(rgb.width, int(columns[-1]) + 1 + padding_x),
+        min(rgb.height, int(rows[-1]) + 1 + padding_y),
     )
 
-    rgba = rgb.convert("RGBA")
-    rgba.putalpha(Image.fromarray(alpha, mode="L"))
-
-    return rgba.crop(box)
+    # Crop before allocating four-channel pixels; this keeps the exact source
+    # RGB and soft alpha while avoiding a full-frame RGBA intermediate.
+    rgba = rgb.crop(box).convert("RGBA")
+    rgba.putalpha(Image.fromarray(alpha, mode="L").crop(box))
+    return rgba

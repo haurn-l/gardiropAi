@@ -36,6 +36,19 @@ help:
 	@echo "make api-check         Check HTTP contracts without neural inference"
 	@echo "make api-key           Prepare a private local service key (does not print it)"
 	@echo "make smoke-http        Test local HTTP with two chosen photos; prompts for paths/category"
+	@echo "make compare-api-shapes  Final ratio/fallback HTTP test; requires TRT_RUN= and BASELINE="
+	@echo "make compare-trt-memory  Compare TensorRT warmup cache; requires TRT_RUN= and BASELINE="
+	@echo "make api-trt-lean      Start opt-in TensorRT API with one startup cache release"
+	@echo "make compare-api-trt   Compare fresh PyTorch/TensorRT HTTP; requires TRT_RUN=passed_run"
+	@echo "make api-trt           Start opt-in TensorRT API; requires TRT_RUN=passed_run"
+	@echo "make tensorrt-env      Prepare separate native TensorRT experiment environment"
+	@echo "make compare-birefnet-trt  Build/cache/test TensorRT; requires ONNX_RUN=passed_run"
+	@echo "make onnx-env          Prepare separate ONNX experiment environment (network download)"
+	@echo "make compare-birefnet-onnx  Export/test fixed-shape BiRefNet; requires BASELINE=FP16_run"
+	@echo "make optimization-env  Record CUDA/ONNX/TensorRT export prerequisites (no inference)"
+	@echo "make compare-marqo     Compare fresh FP32 and candidate FP16; requires BASELINE=directory"
+	@echo "make measure-api       Measure prepared API; compare previous outputs via BASELINE=directory"
+	@echo "make baseline-api      Measure isolated real HTTP latency/RAM/VRAM (CUDA; REPEATS=5)"
 	@echo "make demo-check        Build the UI without server/model inference"
 	@echo "make smoke-drafts      Run one isolated local draft with real models"
 	@echo "make smoke-pipeline    Process two raw photos through segmentation, Marqo and LR"
@@ -239,3 +252,68 @@ smoke-http:
 .PHONY: api-key
 api-key:
 	$(UV) run python scripts/prepare_api_key.py
+
+# Isolated diagnostic server; does not change inference precision or algorithms.
+.PHONY: baseline-api
+baseline-api:
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/benchmark_api.py $(if $(REPEATS),--repeats "$(REPEATS)",) $(if $(PORT),--port "$(PORT)",)
+
+# Prepared production path, with optional read-only baseline comparison.
+.PHONY: measure-api
+measure-api:
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/benchmark_api.py --prepared $(if $(REPEATS),--repeats "$(REPEATS)",) $(if $(PORT),--port "$(PORT)",) $(if $(BASELINE),--compare "$(BASELINE)",)
+
+# Sequential, isolated precision experiment; configured defaults are not changed.
+.PHONY: compare-marqo
+compare-marqo:
+	@test -n "$(BASELINE)" || (echo "Provide BASELINE=completed_FP32_run_directory"; exit 1)
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/compare_marqo_precision.py --baseline "$(BASELINE)" $(if $(REPEATS),--repeats "$(REPEATS)",)
+
+# OPT-05A: prerequisites only. No install, export, engine build or server.
+.PHONY: optimization-env
+optimization-env:
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/check_optimization_env.py
+
+# OPT-05B uses its own overlay environment. The application lock/environment are unchanged.
+.PHONY: onnx-env compare-birefnet-onnx
+onnx-env:
+	$(UV) run python scripts/prepare_onnx_env.py
+
+compare-birefnet-onnx:
+	@test -n "$(BASELINE)" || (echo "Provide BASELINE=completed_FP16_run_directory"; exit 1)
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/compare_birefnet_onnx.py --baseline "$(BASELINE)" $(if $(REPEATS),--repeats "$(REPEATS)",)
+
+# OPT-05C: native TensorRT experiment only; production keeps PyTorch.
+.PHONY: tensorrt-env compare-birefnet-trt
+tensorrt-env:
+	$(UV) run python scripts/prepare_tensorrt_env.py
+
+compare-birefnet-trt:
+	@test -n "$(ONNX_RUN)" || (echo "Provide ONNX_RUN=passed_OPT05B_directory"; exit 1)
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/compare_birefnet_trt.py --onnx-run "$(ONNX_RUN)" $(if $(REPEATS),--repeats "$(REPEATS)",)
+
+# OPT-05D: explicitly selected runtime; ordinary make api keeps PyTorch.
+.PHONY: api-trt compare-api-trt
+api-trt:
+	@test -n "$(TRT_RUN)" || (echo "Provide TRT_RUN=passed_OPT05C_directory"; exit 1)
+	PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ./.venv-trt/bin/python scripts/run_tensorrt_api.py --trt-run "$(TRT_RUN)"
+
+compare-api-trt:
+	@test -n "$(TRT_RUN)" || (echo "Provide TRT_RUN=passed_OPT05C_directory"; exit 1)
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/compare_api_tensorrt.py --trt-run "$(TRT_RUN)" $(if $(REPEATS),--repeats "$(REPEATS)",)
+
+# OPT-05E: release unused allocator cache once after warmup; models stay on CUDA.
+.PHONY: compare-trt-memory api-trt-lean
+compare-trt-memory:
+	@test -n "$(TRT_RUN)" -a -n "$(BASELINE)" || (echo "Provide TRT_RUN=accepted_engine_run BASELINE=completed_TensorRT_API_run"; exit 1)
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/compare_trt_memory.py --trt-run "$(TRT_RUN)" --baseline "$(BASELINE)" $(if $(REPEATS),--repeats "$(REPEATS)",)
+
+api-trt-lean:
+	@test -n "$(TRT_RUN)" || (echo "Provide TRT_RUN=passed_OPT05C_directory"; exit 1)
+	PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ./.venv-trt/bin/python scripts/run_tensorrt_api.py --trt-run "$(TRT_RUN)" --release-warmup-cache
+
+# OPT-06: diagnostics only, with pixel-preserving padded variants of the same demo photos.
+.PHONY: compare-api-shapes
+compare-api-shapes:
+	@test -n "$(TRT_RUN)" -a -n "$(BASELINE)" || (echo "Provide TRT_RUN=accepted_engine_run BASELINE=completed_TensorRT_API_run"; exit 1)
+	HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 $(UV) run python scripts/compare_api_shapes.py --trt-run "$(TRT_RUN)" --baseline "$(BASELINE)" $(if $(REPEATS),--repeats "$(REPEATS)",)

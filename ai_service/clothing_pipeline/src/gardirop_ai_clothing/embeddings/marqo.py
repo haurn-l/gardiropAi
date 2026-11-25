@@ -56,9 +56,20 @@ class MarqoEncoder:
     input_size = MARQO_IMAGE_SIZE
     precision = "fp32"
 
-    def __init__(self, runner: ImageRunner, *, device: str, text_runner=None) -> None:
+    def __init__(
+        self,
+        runner: ImageRunner,
+        *,
+        device: str,
+        text_runner=None,
+        precision: str = "fp32",
+        runtime_details: dict | None = None,
+    ) -> None:
         if not callable(runner) or device not in {"cpu", "cuda"}:
             raise ConfigurationError("Invalid Marqo runner or resolved device.")
+        validate_precision(precision, device)
+        self.precision = precision
+        self.runtime_details = dict(runtime_details or {})
         self._runner = runner
         self.device = device
         self.text_runner = text_runner
@@ -85,8 +96,45 @@ def resolve_device(requested: str, torch_module) -> str:
     return "cuda" if available else "cpu"
 
 
-def load_marqo_encoder(manifest_path: str | Path, *, device: str = "auto") -> MarqoEncoder:
+def validate_precision(precision: str, device: str):
+    if precision not in {"fp32", "fp16"}:
+        raise ConfigurationError("Marqo precision must be fp32 or fp16.")
+    if precision == "fp16" and device != "cuda":
+        raise ConfigurationError("Marqo FP16 requires CUDA; no precision/CPU fallback is allowed.")
+
+
+def resolve_precision(requested: str, resolved_device: str) -> str:
+    """Resolve the configured policy; explicit FP16 still requires CUDA."""
+    if resolved_device not in {"cpu", "cuda"}:
+        raise ConfigurationError("Precision requires a resolved cpu/cuda device.")
+    if requested == "auto":
+        return "fp16" if resolved_device == "cuda" else "fp32"
+    validate_precision(requested, resolved_device)
+    return requested
+
+
+def model_runtime_details(model, precision):
+    parameters = {}
+    for value in model.parameters():
+        name = str(value.dtype)
+        parameters[name] = parameters.get(name, 0) + value.numel() * value.element_size()
+    return {
+        "precision_policy": "open_clip_fp16_mixed" if precision == "fp16" else "fp32",
+        "parameter_mib": sum(parameters.values()) / 1024**2,
+        "parameter_mib_by_dtype": {name: size / 1024**2 for name, size in parameters.items()},
+        "buffer_mib": sum(value.numel() * value.element_size() for value in model.buffers())
+        / 1024**2,
+    }
+
+
+def load_marqo_encoder(
+    manifest_path: str | Path, *, device: str = "auto", precision: str = "fp32"
+) -> MarqoEncoder:
     """Load the exact checkpoint once; no Hub calls, tokenizer, or model fitting."""
+    if precision not in {"auto", "fp32", "fp16"}:
+        raise ConfigurationError("Marqo precision must be auto, fp32 or fp16.")
+    if device == "cpu":
+        resolve_precision(precision, "cpu")
     files = verified_model_files(Path(manifest_path), MARQO_MODEL_NAME)
     config_path = files["open_clip_config.json"]
     if not hmac.compare_digest(file_sha256(config_path), MARQO_CONFIG_SHA256):
@@ -113,6 +161,8 @@ def load_marqo_encoder(manifest_path: str | Path, *, device: str = "auto") -> Ma
     except ImportError as exc:
         raise ModelArtifactError("PyTorch and OpenCLIP must be installed.") from exc
     resolved = resolve_device(device, torch)
+    precision = resolve_precision(precision, resolved)
+    input_dtype = torch.float16 if precision == "fp16" else torch.float32
     try:
         # OpenCLIP 3.3 loads the verified preferred checkpoint with strict=True.
         # require_pretrained prevents returning an encoder with random weights.
@@ -121,14 +171,19 @@ def load_marqo_encoder(manifest_path: str | Path, *, device: str = "auto") -> Ma
             load_weights=True,
             require_pretrained=True,
             weights_only=True,
-            precision="fp32",
+            precision=precision,
             device="cpu",
             pretrained_image=False,
             pretrained_text=False,
         )
         model.eval()
         model.requires_grad_(False)
-        model.to(device=resolved, dtype=torch.float32)
+        if precision == "fp32":
+            model.to(device=resolved, dtype=torch.float32)
+        else:
+            # OpenCLIP constructs the mixed FP16 policy, preserving LayerNormFp32.
+            # A blanket dtype conversion here would undo that policy.
+            model.to(device=resolved)
     except Exception as exc:
         raise ModelArtifactError("Frozen Marqo could not be initialized from local files.") from exc
 
@@ -137,7 +192,7 @@ def load_marqo_encoder(manifest_path: str | Path, *, device: str = "auto") -> Ma
             tensor = transform(image)
             if tensor.shape != (3, MARQO_IMAGE_SIZE, MARQO_IMAGE_SIZE):
                 raise InferenceError("Published Marqo transform returned an unexpected shape.")
-            tensor = tensor.unsqueeze(0).to(device=resolved, dtype=torch.float32)
+            tensor = tensor.unsqueeze(0).to(device=resolved, dtype=input_dtype)
             features = model.encode_image(tensor, normalize=False)
             if features.shape != (1, VIEW_EMBEDDING_DIMENSION):
                 raise InferenceError("Marqo returned an unexpected feature shape.")
@@ -154,7 +209,13 @@ def load_marqo_encoder(manifest_path: str | Path, *, device: str = "auto") -> Ma
             vectors = model.encode_text(tokens, normalize=True)
             return vectors.detach().to(device="cpu", dtype=torch.float32).numpy()
 
-    return MarqoEncoder(run, device=resolved, text_runner=run_text)
+    return MarqoEncoder(
+        run,
+        device=resolved,
+        text_runner=run_text,
+        precision=precision,
+        runtime_details=model_runtime_details(model, precision),
+    )
 
 
 class MarqoEmbeddingService:
@@ -178,10 +239,11 @@ def create_marqo_service(
     *,
     device: str = "auto",
     max_concurrent_gpu_jobs: int = 1,
+    precision: str = "fp32",
 ) -> MarqoEmbeddingService:
     path = Path(manifest_path).expanduser().resolve()
     manager = ModelManager(
-        {MARQO_MODEL_NAME: lambda: load_marqo_encoder(path, device=device)},
+        {MARQO_MODEL_NAME: lambda: load_marqo_encoder(path, device=device, precision=precision)},
         max_concurrent_gpu_jobs=max_concurrent_gpu_jobs,
     )
     return MarqoEmbeddingService(manager)

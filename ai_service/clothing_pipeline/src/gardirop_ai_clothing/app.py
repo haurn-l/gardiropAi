@@ -16,7 +16,12 @@ from gardirop_ai_clothing.api_auth import (
     require_api_key,
     validate_key,
 )
-from gardirop_ai_clothing.api_contracts import HealthResponse, TaxonomyResponse, build_taxonomy
+from gardirop_ai_clothing.api_contracts import (
+    HealthResponse,
+    ReadinessResponse,
+    TaxonomyResponse,
+    build_taxonomy,
+)
 from gardirop_ai_clothing.api_controls import router as controls_router
 from gardirop_ai_clothing.api_jobs import HttpJobs, router
 from gardirop_ai_clothing.api_results import router as results_router
@@ -37,6 +42,7 @@ def create_app(
     api_key: str | None = None,
     service_factory: Callable | None = None,
     settings: Settings | None = None,
+    runtime_preparer: Callable | None = None,
 ) -> FastAPI:
     """The default is a model-free contract probe; uvicorn's app enables processing.
 
@@ -57,10 +63,25 @@ def create_app(
                 if application.state.api_secret is None:
                     application.state.api_secret = load_api_key(configured)
                 api_settings = configured.model_copy(
-                    update={"draft_root": configured.api_draft_root}
+                    update={
+                        "draft_root": configured.api_draft_root,
+                        "draft_storage_profile": "compact"
+                        if configured.api_compact_storage
+                        else "full",
+                    }
                 )
                 factory = service_factory or create_draft_service
                 service = await run_in_threadpool(factory, api_settings)
+                if configured.api_preload_models and (
+                    service_factory is None or runtime_preparer is not None
+                ):
+                    from gardirop_ai_clothing.runtime_preparation import prepare_runtime
+
+                    logger.warning("Preparing clothing models and warmup before HTTP startup...")
+                    report = await run_in_threadpool(
+                        runtime_preparer or prepare_runtime, service, api_settings
+                    )
+                    logger.warning("Clothing runtime prepared: %s", report)
                 application.state.http_jobs = HttpJobs(service)
             yield
         finally:
@@ -71,11 +92,11 @@ def create_app(
 
     application = FastAPI(
         title="GardropAI Clothing AI",
-        version="0.3.0",
+        version="0.4.0",
         lifespan=lifespan,
         description=(
             "Local photo jobs: upload FRONT, then BACK, and poll status. "
-            "Neural models load lazily on the first photograph. "
+            "Production startup loads and warms neural models before accepting requests. "
             "Download current revision metadata, white WebP images and float32 embeddings."
         ),
     )
@@ -151,6 +172,34 @@ def create_app(
         connected = gateway is not None and gateway.service.health()["worker_alive"]
         # Queue availability is not a GPU warmup or model-readiness assertion.
         return HealthResponse(photo_processing_available=connected)
+
+    @application.get(
+        "/health/ready",
+        response_model=ReadinessResponse,
+        responses={503: {"model": ReadinessResponse}},
+        operation_id="getReadiness",
+        tags=["Health"],
+    )
+    def ready(request: Request):
+        gateway = getattr(request.app.state, "http_jobs", None)
+        service = gateway.service if gateway is not None else None
+        preparation = getattr(service, "runtime_preparation", {}) or {}
+        warmed = preparation.get("status") == "READY"
+        connected = service is not None and service.health()["worker_alive"]
+        ready_now = warmed and connected
+        response = ReadinessResponse(
+            status="READY" if ready_now else "NOT_READY",
+            models_warmed=warmed,
+            loaded_models=tuple(preparation.get("loadedModels", ())),
+            startup_preparation_seconds=preparation.get("startupPreparationSeconds"),
+            device=preparation.get("device"),
+            segmentation_backend=preparation.get("segmentationBackend"),
+        )
+        return JSONResponse(
+            status_code=200 if ready_now else 503,
+            content=response.model_dump(by_alias=True),
+            headers={"Cache-Control": "no-store"},
+        )
 
     @application.get(
         "/v1/clothing/taxonomy",

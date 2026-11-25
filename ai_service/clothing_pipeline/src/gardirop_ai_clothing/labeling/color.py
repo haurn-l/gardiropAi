@@ -64,7 +64,16 @@ def _view_palette(image):
 
 
 def detect_pair_color(front, back):
-    views = [_view_palette(front), _view_palette(back)]
+    return combine_view_palettes(_view_palette(front), _view_palette(back))
+
+
+def view_palette(image):
+    """The identical per-view palette used by full pair analysis."""
+    return _view_palette(image)
+
+
+def combine_view_palettes(front, back):
+    views = [front, back]
     available = [v for v in views if v is not None]
     if not available:
         return {

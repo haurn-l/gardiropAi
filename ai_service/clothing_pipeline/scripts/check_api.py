@@ -15,6 +15,10 @@ def main() -> None:
         live = client.get("/health/live")
         live.raise_for_status()
 
+        ready = client.get("/health/ready")
+        assert ready.status_code == 503
+        assert ready.json()["modelsWarmed"] is False
+
         taxonomy = client.get("/v1/clothing/taxonomy")
         taxonomy.raise_for_status()
 
@@ -52,12 +56,13 @@ def main() -> None:
         assert [item["classId"] for item in data["subCategories"]] == list(range(20))
 
         report = {
-            "status": "HTTP_CONTROLS_ROUTES_READY",
+            "status": "HTTP_READINESS_AND_COMPACT_STORAGE_READY",
             "scope": "Contract-only app: authenticated uploads/downloads and category/retry/cancel routes.",
             "photoProcessingAvailable": False,
             "neuralInference": False,
             "backendConnected": False,
             "apiKeyAuthenticationChecked": True,
+            "readinessContractChecked": True,
             "mainCategories": len(data["categories"]),
             "subCategories": len(data["subCategories"]),
             "httpPaths": sorted(openapi.json()["paths"]),

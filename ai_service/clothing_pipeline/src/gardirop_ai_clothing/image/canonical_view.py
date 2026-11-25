@@ -266,10 +266,9 @@ def canonicalize_garment(
                 method = "automatic_upper_silhouette"
 
     # Apply orientation exactly for cardinal angles.
-    rotated = _rotate_rgba(
-        rgba,
-        angle,
-    )
+    # crop() below creates an independent image, so zero rotation needs no
+    # additional full RGBA copy. Preserve the existing angle tolerance.
+    rotated = rgba if abs(angle) < 1e-6 else _rotate_rgba(rgba, angle)
 
     bounds = rotated.getchannel("A").getbbox()
 
