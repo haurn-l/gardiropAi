@@ -15,6 +15,7 @@ import java.util.UUID;
 public interface ClothingService {
     ClothingResponse addClothingItem(ClothingCreateRequest request);
     ClothingResponse confirmPhoto(UUID uploadId, ClothingDetailsRequest request);
+    ClothingResponse saveVisionClothing(String frontImageUrl, String backImageUrl, ClothingDetailsRequest request);
     ClothingResponse updateDetails(Long itemId, ClothingDetailsRequest request);
     List<ClothingResponse> getAllCleanClothesByUser(Long userId);
     List<ClothingResponse> getAllClothesByUser(Long userId);
