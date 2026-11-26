@@ -38,6 +38,8 @@ public class ClothingItem {
     @Column(name = "image_url") //lokaldeki fotoğrafın linki
     private String imageUrl;
 
+    private String backImageUrl;
+
     @Enumerated(EnumType.STRING) // Enum değerini veritabanına sayı (0,1) olarak değil, metin (UST_GIYIM) olarak kaydeder
     @Column(nullable = false)
     private Category category;

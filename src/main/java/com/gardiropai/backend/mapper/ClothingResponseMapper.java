@@ -20,6 +20,7 @@ public class ClothingResponseMapper {
                 .id(item.getId())
                 .name(displayName(item))
                 .imageUrl(item.getImageUrl())
+                .backImageUrl(item.getBackImageUrl())
                 .category(item.getCategory())
                 .subCategory(item.getSubCategory())
                 .color(item.getColor())

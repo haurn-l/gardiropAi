@@ -23,6 +23,8 @@ public class ClothingResponse {
 
     private String imageUrl;
 
+    private String backImageUrl;
+
     private Category category;
 
     private String subCategory;

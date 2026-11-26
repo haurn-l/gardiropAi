@@ -38,6 +38,7 @@ public class ClothingServiceImpl implements ClothingService {
     private final ClothingResponseMapper responseMapper;
     private final JsonMapper jsonMapper;
     private final LocalClothingPhotos photos;
+    private final VisionPhotoFiles visionPhotos;
     private final ClothingCareService clothingCare;
 
     @Override
@@ -59,6 +60,14 @@ public class ClothingServiceImpl implements ClothingService {
         User user = userRepository.getOrCreateDemoUser();
         ClothingItem item = saveClothing(user, photos.url(uploadId), request);
         photo.setClothingItemId(item.getId());
+        return responseMapper.toResponse(item);
+    }
+
+    @Override
+    @Transactional
+    public ClothingResponse saveVisionClothing(String frontImageUrl, String backImageUrl, ClothingDetailsRequest request) {
+        ClothingItem item = saveClothing(userRepository.getOrCreateDemoUser(), frontImageUrl, request);
+        item.setBackImageUrl(backImageUrl);
         return responseMapper.toResponse(item);
     }
 
@@ -136,6 +145,7 @@ public class ClothingServiceImpl implements ClothingService {
         }
         clothingRepository.deleteById(itemId);
         photos.removeForClothing(itemId);
+        visionPhotos.removeForClothing(itemId);
     }
 
     @Override
