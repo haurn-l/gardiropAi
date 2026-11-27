@@ -60,3 +60,13 @@ Kullanıcıların stil tercihleri, PostgreSQL'in `JSONB` veri tipi kullanılarak
 Gardirop AI'ın temel amacı, geleneksel gardırop kullanımını dijitalleştirerek kullanıcıların kıyafet yönetimini kolaylaştırmak ve yapay zeka destekli kişiselleştirilmiş kombin önerileri sunmaktır.
 
 Kullanıcının gardırop içeriğini, kıyafetlerin mevcut durumlarını, mevsimsel koşulları ve kişisel stil tercihlerini bir araya getirerek daha akıllı bir giyim deneyimi sunmayı hedefler.
+
+## Geliştirme ve katkı
+
+Mobil uygulamanın iOS/Android kurulumu ve cihaz kontrolleri için
+[Native geliştirme rehberini](mobile/docs/native-development.md), bileşen yapısı
+için [Mobil mimariyi](mobile/docs/architecture.md) inceleyin.
+
+Her geliştirici güncel `main` üzerinden kendi dalını açar; gönderim ve PR adımları
+[Katkı rehberinde](CONTRIBUTING.md) açıklanır. Kişiye özel çalışma notları ekip
+içinde özelden paylaşılır.

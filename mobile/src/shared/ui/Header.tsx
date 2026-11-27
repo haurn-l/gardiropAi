@@ -21,7 +21,7 @@ export function Header({ title, subtitle, onBack, action }: HeaderProps) {
           {title}
         </Text>
 
-        {/* Alt Başlık: Salnızca subtitle verilmişse render edilir. muted prop'u ile soluk renkte gösterilir. */}
+        {/* Alt Başlık: Yalnızca subtitle verilmişse render edilir. muted prop'u ile soluk renkte gösterilir. */}
         {subtitle ? (
           <Text variant="caption" muted>
             {subtitle}

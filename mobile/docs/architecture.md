@@ -17,6 +17,7 @@ Performans değerlendirmesi release derlemesinde yapılır. Uzun listeler sanall
 görseller sınırlı çözünürlükte saklanır. Bağımlılık kaldırma kararı ölçümden sonra verilir.
 Native modüller ve navigasyon için platformla uyumlu, bakımlı paketler kullanılır.
 
-Harun görevleri ortak temel commitinden açılır. Referans çözümün commitleri görev
-dallarına merge edilmez. İnceleme davranışa ve sözleşmeye göre yapılır; çözümün
-referansla birebir aynı olması gerekmez.
+Her geliştirici kendi dalını güncel `main` üzerinden açar. İnceleme bileşenin
+sözleşmesine, kullanıcı davranışına ve test kanıtına göre yapılır.
+Kişisel çalışma notları depoya eklenmez; ekip akışı kökteki `CONTRIBUTING.md`
+dosyasında anlatılır.

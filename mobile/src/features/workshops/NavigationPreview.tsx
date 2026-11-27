@@ -19,7 +19,7 @@ export function NavigationPreview() {
       <View style={styles.content}>
         <Text>{preview.description}</Text>
         <Text muted>
-          Bu görevde yalnızca geçiş sınırını test ediyoruz. Bu ekranın içeriğini yapman gerekmiyor.
+          Gezinme önizlemesi: bu ekran kök Stack içinde açılır ve alt bar içermez.
         </Text>
         <Button label="Ana ekrana dön" onPress={goBack} />
       </View>
